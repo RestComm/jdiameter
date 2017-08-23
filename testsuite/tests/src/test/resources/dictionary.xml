@@ -8342,18 +8342,6 @@
     </grouped>
   </avpdefn>
 
-  <avpdefn name="Motion-Event-Info" code="2559" vendor-id="TGPP" mandatory="mustnot" protected="mustnot" may-encrypt="no" vendor-bit="mustnot" >
-    <grouped>
-      <avp name="Linear-Distance" multiplicity="1" />
-      <avp name="Occurrence-Info" multiplicity="0-1" />
-      <avp name="Interval-Time" multiplicity="0-1" />
-      <avp name="Maximum-Interval" multiplicity="0-1" />
-      <avp name="Sampling-Interval" multiplicity="0-1" />
-      <avp name="Reporting-Duration" multiplicity="0-1" />
-      <avp name="Reporting-Location-Requirements" multiplicity="0-1" />
-    </grouped>
-  </avpdefn>
-
   <avpdefn name="Linear-Distance" code="2560" vendor-id="TGPP" mandatory="mustnot" protected="mustnot" may-encrypt="no" vendor-bit="must" >
     <type type-name="Unsigned32" />
   </avpdefn>

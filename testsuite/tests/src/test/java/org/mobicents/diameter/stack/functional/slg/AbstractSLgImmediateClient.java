@@ -160,7 +160,7 @@ public abstract class AbstractSLgImmediateClient extends TBase implements Client
   protected abstract int getVerticalRequested();
   protected abstract int getResponseTime();
   protected abstract int getVelocityRequested();
-  protected abstract long getSupportedGADShapes();
+  protected abstract long getLCSSupportedGADShapes();
   protected abstract long getLSCServiceTypeId();
   protected abstract String getLCSCodeword();
   protected abstract String getServiceSelection(); // IE: APN
@@ -343,9 +343,9 @@ public abstract class AbstractSLgImmediateClient extends TBase implements Client
     }
 
     // [ LCS-Supported-GAD-Shapes ]
-    long supportedGADShapes = getSupportedGADShapes();
+    long supportedGADShapes = getLCSSupportedGADShapes();
     if (supportedGADShapes != -1){
-      reqSet.addAvp(Avp.SUPPORTED_GAD_SHAPES, supportedGADShapes, 10415, false, false, true);
+      reqSet.addAvp(Avp.LCS_SUPPORTED_GAD_SHAPES, supportedGADShapes, 10415, false, false, true);
     }
 
     // [ LCS-Service-Type-ID ]

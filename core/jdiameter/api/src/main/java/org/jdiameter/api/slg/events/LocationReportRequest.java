@@ -57,14 +57,6 @@ public interface LocationReportRequest extends AppRequestEvent {
   boolean isIMEIAvpPresent();
   String getIMEI();
 
-  boolean isLCSEPSClientNameAvpPresent();
-  // LCS-EPS-Client-Name AVP of type grouped, includes:
-  // LCS-Name-String, LCS-Format-Indicator
-  boolean isLSCNameStringAvpPresent();
-  String getLSCNameString();
-  boolean isLCSFormatIndicatorAvpPresent();
-  int getLCSFormatIndicator();
-
   boolean isLocationEstimateAvpPresent();
   byte[] getLocationEstimate();
 
@@ -77,111 +69,20 @@ public interface LocationReportRequest extends AppRequestEvent {
   boolean isVelocityEstimateAvpPresent();
   byte[] getVelocityEstimate();
 
-  boolean isEUTRANPositioningDataAvpPresent();
-  byte[] getEUTRANPositioningData();
-
   boolean isECGIAvpPresent();
   byte[] getECGI();
-
-  boolean isGERANPositioningInfoAvpPresent();
-  // GERAN-Positioning-Info AVP of type grouped, includes:
-  // GERAN-Positioning-Data, GERAN-GANSS-Positioning-Data
-  boolean isGERANPositioningDataAvpPresent();
-  byte[] getGERANPositioningData();
-  boolean isGERANGANSSPositioningDataAvpPresent();
-  byte[] getGERANGANSSPositioningData();
 
   boolean isCellGlobalIdentityAvpPresent();
   byte[] getCellGlobalIdentity();
 
-  boolean isUTRANPositioningInfoAvpPresent();
-  // UTRAN-Positioning-Info AVP of type grouped, includes:
-  // UTRAN-Positioning-Data, UTRAN-GANSS-Positioning-Data
-  boolean isUTRANPositioningDataAvpPresent();
-  byte[] getUTRANPositioningData();
-  boolean isUTRANGANSSPositioningDataAvpPresent();
-  byte[] getUTRANGANSSPositioningData();
-
   boolean isServiceAreaIdentityAvpPresent();
   byte[] getServiceAreaIdentity();
-
-  boolean isLCSServiceTypeIDAvpPresent();
-  long getLCSServiceTypeID();
-
-  boolean isPseudonymIndicatorAvpPresent();
-  int getPseudonymIndicator();
-
-  boolean isLCSQoSAvpPresent();
-  // LCS-QoS AVP of type grouped, includes:
-  // LCS-QoS-Class, Horizontal-Accuracy, Vertical-Accuracy
-  // Vertical-Requested, Response-Time
-  boolean isLCSQoSClassAvpPresent();
-  int getLCSQoSClass();
-  boolean isHorizontalAccuracyAvpPresent();
-  long getHorizontalAccuracy();
-  boolean isVerticalAccuracyAvpPresent();
-  long getVerticalAccuracy();
-  boolean isVerticalRequestedAvpPresent();
-  int getVerticalRequested();
-  boolean isResponseTimeAvpPresent();
-  int getResponseTime();
-
-  boolean isServingNodeAvpPresent();
-  // [ Serving-Node ] IE: Target Serving Node Identity
-  // Serving-Node AVP of type grouped, includes:
-  // SGSN-Number, SGSN-Name, SGSN-Realm.
-  // MME-Name, MME-Realm
-  // MSC-Number
-  // 3GPP-AAA-Server-Name, LCS-Capabilities-Sets, GMLC-Address
-  boolean isSGSNNumberAvpPresent();
-  byte[] getSGSNNumber();
-  boolean isSGSNNameAvpPresent();
-  String getSGSNName();
-  boolean isSGSNRealmAvpPresent();
-  String getSGSNRealm();
-  boolean isMMENameAvpPresent();
-  String getMMEName();
-  boolean isMMERealmAvpPresent();
-  String getMMERealm();
-  boolean isMSCNumberAvpPresent();
-  byte[] getMSCNumber();
-  boolean is3GPPAAAServerNameAvpPresent();
-  String get3GPPAAAServerName();
-  boolean isLCSCapabilitiesSetsAvpPresent();
-  long getLCSCapabilitiesSets();
-  boolean isGMLCAddressAvpPresent();
-  java.net.InetAddress getGMLCAddress();
-
-  boolean isLRRFlagsAvpPresent();
-  long getLRRFLags();
 
   boolean isLCSReferenceNumberAvpPresent();
   byte[] getLCSReferenceNumber();
 
-  boolean isDeferredMTLRDataAvpPresent();
-  // Deferred-MT-LR-Data AVP of type grouped, includes:
-  // Deferred-Location-Type, Termination-Cause.
-  boolean isDeferredLocationTypeAvpPresent();
-  long getDeferredLocationType();
-  boolean isTerminationCauseAvpPresent();
-  long getTerminationCause();
-
-  boolean isHGMLCAddressAvpPresent(); // IE: H-GMLC Address mapped to GMLC-Address AVP
-  java.net.InetAddress getHGMLCAddress();
-
-  boolean isPeriodicLDRInfoAvpPresent();
-  // Periodic-LDR-Info AVP of type grouped, includes:
-  // Reporting-Amount, Reporting-Interval
-  boolean isReportingAmountAvpPresent();
-  long getReportingAmount();
-  boolean isReportingIntervalAvpPresent();
-  long getReportingInterval();
-
   boolean isESMLCCellInfoAvpPresent();
   long getCellPortionId();
-
-  boolean is1xRTTRCIDAvpPresent();
-  byte[] get1xRTTRCID();
 
   boolean isCivicAddressAvpPresent();
   String getCivicAddress();

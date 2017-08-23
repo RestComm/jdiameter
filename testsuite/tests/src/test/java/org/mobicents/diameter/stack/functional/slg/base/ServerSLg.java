@@ -452,7 +452,7 @@ public class ServerSLg extends AbstractSLgServer {
   @Override
   protected long getDeferredLocationType() {
   /*
-  3GPP TS 29.172 v13.0.0 section 7.4.36
+  3GPP TS 29.172 v14.1.0 section 7.4.36
     Bit	Event Type          Description
     0   UE-Available        Any event in which the SGSN has established a contact with the UE.
     1   Entering-Into-Area  An event where the UE enters a pre-defined geographical area.
@@ -460,8 +460,14 @@ public class ServerSLg extends AbstractSLgServer {
     3   Being-Inside-Area   An event where the UE is currently within the pre-defined geographical area.For this event,
                             the value of Occurrence-Info AVP is always treated as set to “ONE_TIME_EVENT”.
     4   Periodic-LDR        An event where a defined periodic timer expires in the UE and activates a location report or a location request.
+    5   Motion-Event        An event where the UE moves by more than a minimum linear distance.
+                            This event is applicable to a deferred EPC-MT-LR only.
+    6   LDR-Activated       An event where deferred location reporting has been activated in the UE.
+                            This event is applicable to a deferred EPC-MT-LR only.
+    7   Maximum-Interval-Expiration   An event where the maximum reporting interval has expired.
+                                      This event is applicable to a deferred EPC-MT-LR only.
   */
-    long deferredLocationType = 8;
+    long deferredLocationType = 3;
     return deferredLocationType;
   }
 

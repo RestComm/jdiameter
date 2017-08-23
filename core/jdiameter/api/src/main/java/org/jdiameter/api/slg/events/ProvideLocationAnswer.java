@@ -60,62 +60,14 @@ public interface ProvideLocationAnswer extends AppAnswerEvent{
   boolean isVelocityEstimateAvpPresent();
   byte[] getVelocityEstimate();
 
-  boolean isEUTRANPositioningDataAvpPresent();
-  byte[] getEUTRANPositioningData();
-
   boolean isECGIAvpPresent();
   byte[] getECGI();
-
-  boolean isGERANPositioningInfoAvpPresent();
-  // GERAN-Positioning-Info AVP of type grouped, includes:
-  // GERAN-Positioning-Data, GERAN-GANSS-Positioning-Data
-  boolean isGERANPositioningDataAVPPresent();
-  byte[] getGERANPositioningData();
-  boolean isGERANGANSSPositioningDataAVPPresent();
-  byte[] getGERANGANSSPositioningData();
 
   boolean isCellGlobalIdentityAvpPresent();
   byte[] getCellGlobalIdentity();
 
-  boolean isUTRANPositioningInfoAvpPresent();
-  // UTRAN-Positioning-Info AVP of type grouped, includes:
-  // UTRAN-Positioning-Data, UTRAN-GANSS-Positioning-Data
-  boolean isUTRANPositioningDataAVPPresent();
-  byte[] getUTRANPositioningData();
-  boolean isUTRANGANSSPositioningDataAVPPresent();
-  byte[] getUTRANGANSSPositioningData();
-
   boolean isServiceAreaIdentityAvpPresent();
   byte[] getServiceAreaIdentity();
-
-  boolean isServingNodeAvpPresent();
-  // [ Serving-Node ] IE: Target Serving Node Identity
-  // Serving-Node AVP of type grouped, includes:
-  // SGSN-Number, SGSN-Name, SGSN-Realm.
-  // MME-Name, MME-Realm
-  // MSC-Number
-  // 3GPP-AAA-Server-Name, LCS-Capabilities-Sets, GMLC-Address
-  boolean isSGSNNumberAvpPresent();
-  byte[] getSGSNNumber();
-  boolean isSGSNNameAvpPresent();
-  String getSGSNName();
-  boolean isSGSNRealmAvpPresent();
-  String getSGSNRealm();
-  boolean isMMENameAvpPresent();
-  String getMMEName();
-  boolean isMMERealmAvpPresent();
-  String getMMERealm();
-  boolean isMSCNumberAvpPresent();
-  byte[] getMSCNumber();
-  boolean is3GPPAAAServerNameAvpPResent();
-  String get3GPPAAAServerName();
-  boolean isLCSCapabilitiesSetsAvpPresent();
-  long getLCSCapabilitiesSets();
-  boolean isGMLCAddressAvpPresent();
-  java.net.InetAddress getGMLCAddress();
-
-  boolean isPLAFlagsAvpPresent();
-  long getPLAFlags();
 
   boolean isESMLCCellInfoAvpPresent();
   long getCellPortionId();

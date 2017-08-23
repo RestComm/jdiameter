@@ -2446,9 +2446,9 @@ public interface Avp extends Wrapper, Serializable {
   int RESPONSE_TIME = 2509;
 
   /**
-   * SLg (3GPP TS 29.172) Supported-GAD-Shapes AVP code
+   * SLg (3GPP TS 29.172) LCS-Supported-GAD-Shapes AVP code
    */
-  int SUPPORTED_GAD_SHAPES = 2510;
+  int LCS_SUPPORTED_GAD_SHAPES = 2510;
 
   /**
    * SLg (3GPP TS 29.172) LCS-Codeword AVP code
@@ -2684,6 +2684,44 @@ public interface Avp extends Wrapper, Serializable {
    * SLg (3GPP TS 29.172) UTRAN-Additional-Positioning-Data AVP Code
    */
   int UTRAN_ADDITIONAL_POSITIONING_DATA = 2558;
+
+  /**
+   * SLg (3GPP TS 29.172) Motion-Event-Info
+   */
+  int MOTION_EVENT_INFO = 2559;
+
+  /**
+   * SLg (3GPP TS 29.172) Linear-Distance
+   */
+  int LINEAR_DISTANCE = 2560;
+
+  /**
+   * SLg (3GPP TS 29.172) Maximum-Interval
+   */
+  int MAXIMUM_INTERVAL = 2561;
+
+
+  /**
+   * SLg (3GPP TS 29.172) Sampling-Interval
+   */
+  int SAMPLING_INTERVAL = 2562;
+
+
+  /**
+   * SLg (3GPP TS 29.172) Reporting-Duration
+   */
+  int REPORTING_DURATION = 2563;
+
+
+  /**
+   * SLg (3GPP TS 29.172) Reporting-Location-Requirements
+   */
+  int REPORTING_LOCATION_REQUIREMENTS = 2564;
+
+  /**
+   * SLg (3GPP TS 29.172) Additional-Area
+   */
+  int ADDITIONAL_AREA = 2565;
 
   /**
    * SLg (3GPP TS 29.172) Service-Selection AVP Code (reused from 3GPP TS 29.272 & IETF RFC 5778)

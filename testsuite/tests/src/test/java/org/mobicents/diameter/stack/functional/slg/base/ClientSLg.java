@@ -295,7 +295,7 @@ public class ClientSLg extends AbstractSLgClient {
   }
 
   @Override
-  protected long getSupportedGADShapes() {
+  protected long getLCSSupportedGADShapes() {
   /*
   3GPP TS 29.172 v13.0.0 section 7.4.12
     The Supported-GAD-Shapes AVP is of type Unsigned32 and it shall contain a bitmask.

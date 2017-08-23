@@ -60,69 +60,8 @@ public interface ProvideLocationRequest extends AppRequestEvent {
   boolean isIMEIAvpPresent();
   String getIMEI();
 
-  boolean isLCSEPSClientNameAvpPresent();
-  // LCS-EPS-Client-Name AVP of type grouped, includes:
-  // LCS-Name-String, LCS-Format-Indicator
-  boolean isLSCNameStringAvpPresent();
-  String getLSCNameString();
-  boolean isLCSFormatIndicatorAvpPresent();
-  int getLCSFormatIndicator();
-
-  boolean isLCSCLientTypeAvpPresent();
-  int getLCSClientType();
-
-  boolean isLCSRequestorNamePresent();
-  // LCS-Requestor-NAme AVP of type grouped, includes:
-  // LCS-Requestor-Id-String, LCS-Format-Indicator
-  boolean isLCSRequestorIdStringAvpPresent();
-  String getLCSRequestorIdString();
-  boolean isReqLCSFormatIndicatorAvpPresent();
-  int getReqLCSFormatIndicator();
-
-  boolean isLCSPriorityPresent();
-  long getLCSPriority();
-
-  boolean isLCSQoSAvpPresent();
-  // LCS-QoS AVP of type grouped, includes:
-  // LCS-QoS-Class, Horizontal-Accuracy, Vertical-Accuracy
-  // Vertical-Requested, Response-Time
-  boolean isLCSQoSClassAvpPresent();
-  int getLCSQoSClass();
-  boolean isHorizontalAccuracyAvpPresent();
-  long getHorizontalAccuracy();
-  boolean isVerticalAccuracyAvpPresent();
-  long getVerticalAccuracy();
-  boolean isVerticalRequestedAvpPresent();
-  int getVerticalRequested();
-  boolean isResponseTimeAvpPresent();
-  int getResponseTime();
-
   boolean isVelocityRequestedAvpPresent();
   int getVelocityRequested();
-
-  boolean isSupportedGADShapesAvpPresent();
-  long getSupportedGADSahpes();
-
-  boolean isLSCServiceTypeIdAvpPresent();
-  long getLSCServiceTypeId();
-
-  boolean isLCSCodewordAvpPresent();
-  String getLCSCodeword();
-
-  boolean isServiceSelectionAvpPresent();
-  String getServiceSelection(); // IE: APN
-
-  boolean isLCSPrivacyCheckSessionAvpPresent(); // IE: Session-Related Privacy Check
-  // LCS-Privacy-Check-Session of type grouped, includes
-  // LCS-Privacy-Check
-  boolean isLCSPrivacyCheckAvpPresent();
-  int getLCSPrivacyCheck();
-
-  boolean isLCSPrivacyCheckNonSessionAvpPresent(); // IE: Non-Session-Related Privacy Check
-  // LCS-Privacy-Check-Non-Session of type grouped, includes
-  // LCS-Privacy-Check
-  boolean isLCSPrivacyCheckNSAvpPresent();
-  int getLCSPrivacyCheckNS();
 
   boolean isDeferredLocationTypeAvpPresent();
   long getDeferredLocationType();
@@ -130,26 +69,8 @@ public interface ProvideLocationRequest extends AppRequestEvent {
   boolean isLCSReferenceNumberAvpPresent();
   byte[] getLCSReferenceNumber();
 
-  boolean isAreaEventInfoAvpPresent();
-  // Area-Event-Info AVP of type grouped, includes:
-  // Area-Definition, Occurrence-Info, Interval-Time
-  boolean isOccurrenceInfoAvpPresent();
-  int getOccurrenceInfo();
-  boolean isIntervalTimeAvpPresent();
-  long getIntervalTime();
-  boolean isAreaDefinitionAvpPresent();
-  // Area-Definition AVP of type grouped, includes:
-  // Area-Type, Area-Identification
-  boolean isAreaTypeAvpPresent();
-  long getAreaType();
-  boolean isAreaIdentificationAvpPresent();
-  byte[] getAreaIdentification();
-
   boolean isGMLCAddressAvpPresent();
   java.net.InetAddress getGMLCAddress();
-
-  boolean isPLRFlagsAvpPresent();
-  long getPLRFLags();
 
   boolean isPeriodicLDRInfoAvpPresent();
   // Periodic-LDR-Info AVP of type grouped, includes:
@@ -159,16 +80,4 @@ public interface ProvideLocationRequest extends AppRequestEvent {
   boolean isReportingIntervalAvpPresent();
   long getReportingInterval();
 
-  boolean isReportingPLMNListAvpPresent();
-  // Reporting-PLMN-List AVP of type grouped, includes:
-  // PLMN-ID-List, Prioritized-List-Indicator
-  boolean isPrioritizedListIndicatorAvpPresent();
-  int getPrioritizedListIndicator();
-  boolean isPLMNIDListAvpPresent();
-  // PLMN-ID-List AVP of type grouped, includes:
-  // Visited-PLMN-Id, Periodic-Location-Support-Indicator
-  boolean isVisitedPLMNIdAvpPresent();
-  byte[] getVisitedPLMNId();
-  boolean isPeriodicLocationSupportIndicatorAvpPresent();
-  int getPeriodicLocationSupportIndicator();
 }
