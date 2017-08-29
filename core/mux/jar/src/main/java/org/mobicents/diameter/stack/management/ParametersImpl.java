@@ -54,7 +54,6 @@ import static org.jdiameter.client.impl.helpers.Parameters.MessageTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.QueueSize;
 import static org.jdiameter.client.impl.helpers.Parameters.RecTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionRequiredResCodes;
-import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerDelay;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerPause;
 import static org.jdiameter.client.impl.helpers.Parameters.StopTimeOut;
@@ -98,7 +97,6 @@ public class ParametersImpl implements Parameters {
   private long dpaTimeout;
   private long recTimeout;
   private long txTimeout;
-  private long retransmissionTimeOut;
   private String retransmissionRequiredResCodes;
 
   // Gone since merge with build-350
@@ -127,7 +125,6 @@ public class ParametersImpl implements Parameters {
     this.dpaTimeout = config.getLongValue(DpaTimeOut.ordinal(), 5000L);
     this.recTimeout = config.getLongValue(RecTimeOut.ordinal(), 10000L);
     this.txTimeout = config.getLongValue(TxTimeOut.ordinal(), 10000);
-    this.retransmissionTimeOut = config.getLongValue(RetransmissionTimeOut.ordinal(), 45000L);
     this.retransmissionRequiredResCodes = Arrays.toString(config.getIntArrayValue(RetransmissionRequiredResCodes.ordinal(), null));
 
     // Concurrent Entities
@@ -269,14 +266,6 @@ public class ParametersImpl implements Parameters {
 
   public void setTxTimeout(long txTimeout) {
     DiameterConfiguration.getMutableConfiguration().setLongValue(TxTimeOut.ordinal(), txTimeout);
-  }
-
-  public long getRetransmissionTimeout() {
-    return retransmissionTimeOut;
-  }
-
-  public void setRetransmissionTimeout(long retrTimeout) {
-    DiameterConfiguration.getMutableConfiguration().setLongValue(RetransmissionTimeOut.ordinal(), retrTimeout);
   }
 
   public String getRetransmissionRequiredResCodes() {

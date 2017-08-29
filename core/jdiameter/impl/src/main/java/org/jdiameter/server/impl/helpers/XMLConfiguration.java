@@ -104,7 +104,6 @@ import static org.jdiameter.client.impl.helpers.Parameters.RealmEntry;
 import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.RecTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionRequiredResCodes;
-import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.SDEnableSessionCreation;
 import static org.jdiameter.client.impl.helpers.Parameters.SDName;
 import static org.jdiameter.client.impl.helpers.Parameters.SDProtocol;
@@ -394,9 +393,6 @@ public class XMLConfiguration extends EmptyConfiguration {
       }
       else if (nodeName.equals("TxTimeOut")) {
         add(TxTimeOut, getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("RetransmissionTimeOut")) {
-        add(RetransmissionTimeOut, getLongValue(c.item(i)));
       }
       else if (nodeName.equals("RetransmissionRequiredResCodes")) {
         addRetransmissionRequiredResCodes(c.item(i));

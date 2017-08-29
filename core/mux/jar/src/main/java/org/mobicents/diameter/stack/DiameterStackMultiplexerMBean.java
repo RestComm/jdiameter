@@ -216,16 +216,6 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean {
   void _Parameters_setTxTimeout(long txTimeout) throws MBeanException;
 
   /**
-   * Defines one of failover algorithm stop conditions. Namely, in case of consecutive peers
-   * failures the failover algorithm will try to retransmit a given message to other peers
-   * until retransmission timeout expires
-   *
-   * @param retransmissionTimeout the amount of time, in ms.
-   * @throws MBeanException if the operation is unable to perform correctly
-   */
-  void _Parameters_setRetransmissionTimeout(long retransmissionTimeout) throws MBeanException;
-
-  /**
    * Defines a list of result codes which make an initial request to be retransmitted to
    * another remote peer.
    *

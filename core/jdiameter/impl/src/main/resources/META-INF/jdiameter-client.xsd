@@ -231,14 +231,6 @@
                    <xsi:attribute name="value" type="xsi:long" use="required"/>
                </xsi:complexType>
             </xsi:element>
-            <xsi:element name="RetransmissionTimeOut" minOccurs="0" maxOccurs="1">
-                <xsi:annotation>
-                    <xsi:documentation>Retransmission stop timer which defines how long the stack should carry on with retransmissions in case of delivery failures.</xsi:documentation>
-                </xsi:annotation>
-                <xsi:complexType>
-                   <xsi:attribute name="value" type="xsi:long" use="required"/>
-               </xsi:complexType>
-            </xsi:element>
             <xsi:element name="RetransmissionRequiredResCodes" minOccurs="0" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Comma delimited list of result codes which make an initial request to be retransmitted.</xsi:documentation>

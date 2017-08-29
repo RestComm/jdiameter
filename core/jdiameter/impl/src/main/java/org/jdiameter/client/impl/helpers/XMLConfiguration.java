@@ -132,7 +132,6 @@ import static org.jdiameter.server.impl.helpers.Parameters.RealmEntryIsDynamic;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmHosts;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmLocalAction;
 import static org.jdiameter.server.impl.helpers.Parameters.RealmName;
-import static org.jdiameter.server.impl.helpers.Parameters.RetransmissionTimeOut;
 
 import java.io.File;
 import java.io.InputStream;
@@ -382,9 +381,6 @@ public class XMLConfiguration extends EmptyConfiguration {
       }
       else if (nodeName.equals("TxTimeOut")) {
         add(TxTimeOut, getLongValue(c.item(i)));
-      }
-      else if (nodeName.equals("RetransmissionTimeOut")) {
-        add(RetransmissionTimeOut, getLongValue(c.item(i)));
       }
       else if (nodeName.equals("RetransmissionRequiredResCodes")) {
         addRetransmissionRequiredResCodes(c.item(i));

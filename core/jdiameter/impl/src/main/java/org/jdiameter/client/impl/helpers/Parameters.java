@@ -409,12 +409,6 @@ public class Parameters extends Ordinal {
   public static final Parameters TxTimeOut = new Parameters("TxTimeOut", Long.class, 10000L);
 
   /**
-   * Retransmission stop timer which defines how long the stack should wait for the answer message from remote peers and carry on with
-   * retransmissions in case of delivery failures.
-   */
-  public static final Parameters RetransmissionTimeOut = new Parameters("RetransmissionTimeOut", Long.class, 45000L);
-
-  /**
    * Array of result codes which make an initial request to be retransmitted to another remote peer.
    */
   public static final Parameters RetransmissionRequiredResCodes = new Parameters("RetransmissionRequiredResCodes", Object.class);
