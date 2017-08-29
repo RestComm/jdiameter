@@ -95,10 +95,6 @@ public interface Parameters extends Serializable {
 
   void setRecTimeout(long recTimeout);
 
-  int getSessionInactivityTimeout();
-
-  void setSessionInactivityTimeout(long sessionInactivityTimeout);
-
   long getTxTimeout();
 
   void setTxTimeout(long txTimeout);

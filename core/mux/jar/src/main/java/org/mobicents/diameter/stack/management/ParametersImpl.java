@@ -55,7 +55,6 @@ import static org.jdiameter.client.impl.helpers.Parameters.QueueSize;
 import static org.jdiameter.client.impl.helpers.Parameters.RecTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionRequiredResCodes;
 import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionTimeOut;
-import static org.jdiameter.client.impl.helpers.Parameters.SessionInactivityTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerDelay;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerPause;
 import static org.jdiameter.client.impl.helpers.Parameters.StopTimeOut;
@@ -101,7 +100,6 @@ public class ParametersImpl implements Parameters {
   private long txTimeout;
   private long retransmissionTimeOut;
   private String retransmissionRequiredResCodes;
-  private int sessionInactivityTimeout;
 
   // Gone since merge with build-350
   // private String threadPool_Priority;
@@ -131,7 +129,6 @@ public class ParametersImpl implements Parameters {
     this.txTimeout = config.getLongValue(TxTimeOut.ordinal(), 10000);
     this.retransmissionTimeOut = config.getLongValue(RetransmissionTimeOut.ordinal(), 45000L);
     this.retransmissionRequiredResCodes = Arrays.toString(config.getIntArrayValue(RetransmissionRequiredResCodes.ordinal(), null));
-    this.sessionInactivityTimeout = config.getIntValue(SessionInactivityTimeOut.ordinal(), 600);
 
     // Concurrent Entities
     for (Configuration concurrentEntity : config.getChildren(Concurrent.ordinal())) {
@@ -264,14 +261,6 @@ public class ParametersImpl implements Parameters {
   @Override
   public void setRecTimeout(long recTimeout) {
     DiameterConfiguration.getMutableConfiguration().setLongValue(RecTimeOut.ordinal(), recTimeout);
-  }
-
-  public int getSessionInactivityTimeout() {
-    return sessionInactivityTimeout;
-  }
-
-  public void setSessionInactivityTimeout(long sessionInactivityTimeout) {
-    DiameterConfiguration.getMutableConfiguration().setLongValue(SessionInactivityTimeOut.ordinal(), sessionInactivityTimeout);
   }
 
   public long getTxTimeout() {

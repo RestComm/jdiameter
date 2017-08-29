@@ -208,16 +208,6 @@ public interface DiameterStackMultiplexerMBean extends ServiceMBean {
   void _Parameters_setRecTimeout(long recTimeout) throws MBeanException;
 
   /**
-   * Sets the timeout value for session inactivity timer which defines how much time
-   * the persistence record should be kept if there is no request sent within a session.
-   * Irrelevant when session persistent routing is not enabled, defaults to 1800 seconds.
-   *
-   * @param timeout the amount of time, in seconds.
-   * @throws MBeanException if the operation is unable to perform correctly
-   */
-  void _Parameters_setSessionInactivityTimeout(int timeout) throws MBeanException;
-
-  /**
    * Sets the waiting time in the client in the Pending state. (default: 10000, 10 seconds).
    *
    * @param txTimeout the amount of time, in ms.

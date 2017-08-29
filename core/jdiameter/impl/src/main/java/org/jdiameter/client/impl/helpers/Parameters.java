@@ -403,13 +403,6 @@ public class Parameters extends Ordinal {
   public static final Parameters DictionaryReceiveLevel = new Parameters("DictionaryReceiveLevel", String.class, "OFF");
 
   /**
-   * Maximum session inactivity time specified in seconds which defines how much time
-   * the persistence record should be kept if there is no request sent within a session.
-   * Irrelevant when session persistent routing is not enabled.
-   */
-  public static final Parameters SessionInactivityTimeOut = new Parameters("SessionInactivityTimeOut", Integer.class, 600);
-
-  /**
    * Tx timer as described in chapter 13. of RFC 4006:
    * <pre>The Tx timer is introduced to control the waiting time in the client in the Pending state. The recommended value is 10 seconds.</pre>
    */

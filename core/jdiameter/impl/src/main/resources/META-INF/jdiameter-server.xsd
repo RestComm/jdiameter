@@ -77,7 +77,8 @@
                 </xsi:complexType>
             </xsi:element>
             <xsi:element ref="Applications" minOccurs="0" maxOccurs="1" />
-            <xsi:element ref="OverloadMonitor" minOccurs="0" maxOccurs="1" />        </xsi:sequence>
+            <xsi:element ref="OverloadMonitor" minOccurs="0" maxOccurs="1" />
+        </xsi:sequence>
         <!-- must match SecurityData.name -->
         <xsi:attribute name="security_ref"  type="xsi:string" use="optional"/>
     </xsi:complexType>
@@ -310,14 +311,6 @@
                 </xsi:annotation>
                 <xsi:complexType>
                    <xsi:attribute name="value" type="xsi:string" use="required"/>
-               </xsi:complexType>
-            </xsi:element>
-            <xsi:element name="SessionInactivityTimeOut" minOccurs="0" maxOccurs="1">
-                <xsi:annotation>
-                    <xsi:documentation>Session inactivity timeout in seconds used for session persistence.</xsi:documentation>
-                </xsi:annotation>
-                <xsi:complexType>
-                   <xsi:attribute name="value" type="xsi:integer" use="required"/>
                </xsi:complexType>
             </xsi:element>
             <xsi:element name="BindDelay" minOccurs="0" maxOccurs="1">

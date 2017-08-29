@@ -60,7 +60,6 @@ import static org.jdiameter.client.impl.helpers.Parameters.RealmTable;
 import static org.jdiameter.client.impl.helpers.Parameters.RecTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionRequiredResCodes;
 import static org.jdiameter.client.impl.helpers.Parameters.RetransmissionTimeOut;
-import static org.jdiameter.client.impl.helpers.Parameters.SessionInactivityTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerDelay;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsLoggerPause;
 import static org.jdiameter.client.impl.helpers.Parameters.StopTimeOut;
@@ -853,10 +852,6 @@ public class DiameterStackMultiplexer extends ServiceMBeanSupport implements Dia
   @Override
   public void _Parameters_setRecTimeout(long stopTimeout) throws MBeanException {
     getMutableConfiguration().setLongValue(RecTimeOut.ordinal(), stopTimeout);
-  }
-
-  public void _Parameters_setSessionInactivityTimeout(int timeout) throws MBeanException {
-    getMutableConfiguration().setIntValue(SessionInactivityTimeOut.ordinal(), timeout);
   }
 
   public void _Parameters_setTxTimeout(long txTimeout) throws MBeanException {

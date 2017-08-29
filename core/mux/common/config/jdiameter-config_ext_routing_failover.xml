@@ -31,15 +31,15 @@
     <UseUriAsFqdn value="false" /> <!-- Needed for Ericsson Emulator (set to true) -->
     <QueueSize value="10000" />
     <MessageTimeOut value="60000" />
+    <SessionTimeOut value="600000" />
     <StopTimeOut value="10000" />
     <CeaTimeOut value="10000" />
     <IacTimeOut value="5000" />
     <DwaTimeOut value="5000" />
     <DpaTimeOut value="5000" />
     <RecTimeOut value="10000" />
-    <!--<TxTimeOut value="10000" />-->
-    <!--<RetransmissionRequiredResCodes value="3004,3005" />-->
-    <!--<SessionTimeOut value="600"/>-->
+    <TxTimeOut value="1000" />
+    <RetransmissionRequiredResCodes value="3004,3005" />
 
     <!-- Peer FSM Thread Count Configuration -->
     <PeerFSMThreadCount value="3" />

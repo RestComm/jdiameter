@@ -110,7 +110,6 @@ import static org.jdiameter.client.impl.helpers.Parameters.SDProtocol;
 import static org.jdiameter.client.impl.helpers.Parameters.SDUseClientMode;
 import static org.jdiameter.client.impl.helpers.Parameters.Security;
 import static org.jdiameter.client.impl.helpers.Parameters.SecurityRef;
-import static org.jdiameter.client.impl.helpers.Parameters.SessionInactivityTimeOut;
 import static org.jdiameter.client.impl.helpers.Parameters.Statistics;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsActiveList;
 import static org.jdiameter.client.impl.helpers.Parameters.StatisticsEnabled;
@@ -380,9 +379,6 @@ public class XMLConfiguration extends EmptyConfiguration {
       }
       else if (nodeName.equals("Dictionary")) {
         addDictionary(Dictionary, c.item(i));
-      }
-      else if (nodeName.equals("SessionInactivityTimeOut")) {
-        add(SessionInactivityTimeOut, getIntValue(c.item(i)));
       }
       else if (nodeName.equals("TxTimeOut")) {
         add(TxTimeOut, getLongValue(c.item(i)));

@@ -247,14 +247,6 @@
                    <xsi:attribute name="value" type="xsi:string" use="required"/>
                </xsi:complexType>
             </xsi:element>
-            <xsi:element name="SessionInactivityTimeOut" minOccurs="0" maxOccurs="1">
-                <xsi:annotation>
-                    <xsi:documentation>Session inactivity timeout in seconds used for session persistence.</xsi:documentation>
-                </xsi:annotation>
-                <xsi:complexType>
-                   <xsi:attribute name="value" type="xsi:integer" use="required"/>
-               </xsi:complexType>
-            </xsi:element>
             <xsi:element name="PeerFSMThreadCount" minOccurs="0" maxOccurs="1">
                 <xsi:annotation>
                     <xsi:documentation>Peer FSM Thread Count.</xsi:documentation>
