@@ -79,7 +79,7 @@
         </replace>
 
         <replace file="${jboss.home}/standalone/configuration/standalone.xml">
-            <replacetoken><![CDATA[<subsystem xmlns="urn:org.restcomm:diameter-mux:1.0">]]></replacetoken>
+            <replacetoken><![CDATA[<subsystem xmlns="urn:org.restcomm:diameter-mux:1.0"/>]]></replacetoken>
             <replacevalue><![CDATA[]]></replacevalue>
         </replace>
 
