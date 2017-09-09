@@ -161,7 +161,7 @@ public class ClientSLgLRA extends AbstractSLgDeferredClient {
         *[ AVP ]
     If not included, the default value of Periodic-Location-Support-Indicator shall be considered as "NOT_SUPPORTED" (0).
   */
-    String vPlmnIdList = "471800";
+    String vPlmnIdList = "222";
     byte[] visitedPlmnIdList = vPlmnIdList.getBytes();
     return visitedPlmnIdList;
   }
