@@ -21,8 +21,6 @@
 
 package org.jdiameter.common.impl.app.slg;
 
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Message;
 import org.jdiameter.api.slg.events.ProvideLocationRequest;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;

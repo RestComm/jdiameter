@@ -21,8 +21,6 @@
 
 package org.jdiameter.common.impl.app.slh;
 
-import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.slh.events.LCSRoutingInfoRequest;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.slf4j.Logger;

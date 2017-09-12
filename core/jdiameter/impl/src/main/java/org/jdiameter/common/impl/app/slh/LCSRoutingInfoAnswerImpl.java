@@ -29,7 +29,6 @@ import org.jdiameter.api.slh.events.LCSRoutingInfoAnswer;
 import org.jdiameter.common.impl.app.AppRequestEventImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-// import java.net.InetAddress;
 
 /**
  * @author <a href="mailto:fernando.mendioroz@gmail.com"> Fernando Mendioroz </a>
