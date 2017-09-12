@@ -45,49 +45,4 @@ public interface LocationReportRequest extends AppRequestEvent {
 
   int code = 8388621;
 
-  boolean isLocationEventAvpPresent();
-  int getLocationEvent();
-
-  boolean isUserNameAvpPresent(); // Mapped IE: IMSI
-  String getUserName(); // Mapped IE: IMSI
-
-  boolean isMSISDNAvpPresent();
-  byte[] getMSISDN();
-
-  boolean isIMEIAvpPresent();
-  String getIMEI();
-
-  boolean isLocationEstimateAvpPresent();
-  byte[] getLocationEstimate();
-
-  boolean isAccuracyFulfilmentIndicatorAvpPresent();
-  int getAccuracyFulfilmentIndicator();
-
-  boolean isAgeOfLocationEstimateAvpPresent();
-  long getAgeOfLocationEstimate();
-
-  boolean isVelocityEstimateAvpPresent();
-  byte[] getVelocityEstimate();
-
-  boolean isECGIAvpPresent();
-  byte[] getECGI();
-
-  boolean isCellGlobalIdentityAvpPresent();
-  byte[] getCellGlobalIdentity();
-
-  boolean isServiceAreaIdentityAvpPresent();
-  byte[] getServiceAreaIdentity();
-
-  boolean isLCSReferenceNumberAvpPresent();
-  byte[] getLCSReferenceNumber();
-
-  boolean isESMLCCellInfoAvpPresent();
-  long getCellPortionId();
-
-  boolean isCivicAddressAvpPresent();
-  String getCivicAddress();
-
-  boolean isBarometricPressureAvpPresent();
-  long getBarometricPressure();
-
 }

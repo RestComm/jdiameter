@@ -48,34 +48,4 @@ public interface ProvideLocationAnswer extends AppAnswerEvent{
 
   int code = 8388620;
 
-  boolean isLocationEstimateAvpPresent();
-  byte[] getLocationEstimate();
-
-  boolean isAccuracyFulfilmentIndicatorAvpPresent();
-  int getAccuracyFulfilmentIndicator();
-
-  boolean isAgeOfLocationEstimateAvpPresent();
-  long getAgeOfLocationEstimate();
-
-  boolean isVelocityEstimateAvpPresent();
-  byte[] getVelocityEstimate();
-
-  boolean isECGIAvpPresent();
-  byte[] getECGI();
-
-  boolean isCellGlobalIdentityAvpPresent();
-  byte[] getCellGlobalIdentity();
-
-  boolean isServiceAreaIdentityAvpPresent();
-  byte[] getServiceAreaIdentity();
-
-  boolean isESMLCCellInfoAvpPresent();
-  long getCellPortionId();
-
-  boolean isCivicAddressAvpPresent();
-  String getCivicAddress();
-
-  boolean isBarometricPressureAvpPresent();
-  long getBarometricPressure();
-
 }

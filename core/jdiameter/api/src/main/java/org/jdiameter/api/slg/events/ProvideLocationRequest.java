@@ -48,36 +48,4 @@ public interface ProvideLocationRequest extends AppRequestEvent {
 
   int code = 8388620;
 
-  boolean isSLgLocationTypeAvpPresent();
-  int getSLgLocationType();
-
-  boolean isUserNameAvpPresent(); // Mapped IE: IMSI
-  String getUserName(); // Mapped IE: IMSI
-
-  boolean isMSISDNAvpPresent();
-  byte[] getMSISDN();
-
-  boolean isIMEIAvpPresent();
-  String getIMEI();
-
-  boolean isVelocityRequestedAvpPresent();
-  int getVelocityRequested();
-
-  boolean isDeferredLocationTypeAvpPresent();
-  long getDeferredLocationType();
-
-  boolean isLCSReferenceNumberAvpPresent();
-  byte[] getLCSReferenceNumber();
-
-  boolean isGMLCAddressAvpPresent();
-  java.net.InetAddress getGMLCAddress();
-
-  boolean isPeriodicLDRInfoAvpPresent();
-  // Periodic-LDR-Info AVP of type grouped, includes:
-  // Reporting-Amount, Reporting-Interval
-  boolean isReportingAmountAvpPresent();
-  long getReportingAmount();
-  boolean isReportingIntervalAvpPresent();
-  long getReportingInterval();
-
 }

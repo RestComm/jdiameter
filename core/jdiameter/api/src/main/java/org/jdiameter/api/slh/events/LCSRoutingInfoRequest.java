@@ -41,13 +41,4 @@ public interface LCSRoutingInfoRequest extends AppRequestEvent {
 
   int code = 8388622;
 
-  boolean isUserNameAVPPresent(); // Mapped IE: IMSI
-  String getUserName(); // Mapped IE: IMSI
-
-  boolean isMSISDNAVPPresent();
-  byte[] getMSISDN();
-
-  boolean isGMLCNumberAVPPresent();
-  byte[] getGMLCNumber();
-
 }

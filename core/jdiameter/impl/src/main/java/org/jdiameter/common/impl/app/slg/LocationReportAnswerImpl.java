@@ -62,40 +62,4 @@ public class LocationReportAnswerImpl extends AppRequestEventImpl implements Loc
     return null;
   }
 
-  @Override
-  public boolean isGMLCAddressAvpPresent() {
-    return super.message.getAvps().getAvp(Avp.GMLC_ADDRESS) != null;
-  }
-
-  @Override
-  public java.net.InetAddress getGMLCAddress() {
-    Avp lcsGMLCAddressAvp = super.message.getAvps().getAvp(Avp.GMLC_ADDRESS);
-    if (lcsGMLCAddressAvp != null) {
-      try {
-        return lcsGMLCAddressAvp.getAddress();
-      } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain GMLC Address AVP value", e);
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public boolean isLCSReferenceNumberAvpPresent() {
-    return super.message.getAvps().getAvp(Avp.LCS_REFERENCE_NUMBER) != null;
-  }
-
-  @Override
-  public byte[] getLCSReferenceNumber() {
-    Avp lcsLCSReferenceNumberAvp = super.message.getAvps().getAvp(Avp.LCS_REFERENCE_NUMBER);
-    if (lcsLCSReferenceNumberAvp != null) {
-      try {
-        return lcsLCSReferenceNumberAvp.getOctetString();
-      } catch (AvpDataException e) {
-        logger.debug("Failure trying to obtain LCS Reference Number AVP value", e);
-      }
-    }
-    return null;
-  }
-
 }

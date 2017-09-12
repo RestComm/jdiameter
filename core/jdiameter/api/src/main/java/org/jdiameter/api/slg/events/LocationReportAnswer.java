@@ -45,10 +45,4 @@ public interface LocationReportAnswer extends AppAnswerEvent{
 
   int code = 8388621;
 
-  boolean isGMLCAddressAvpPresent();
-  java.net.InetAddress getGMLCAddress();
-
-  boolean isLCSReferenceNumberAvpPresent();
-  byte[] getLCSReferenceNumber();
-
 }
