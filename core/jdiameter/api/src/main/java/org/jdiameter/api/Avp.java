@@ -2302,6 +2302,465 @@ public interface Avp extends Wrapper, Serializable {
    */
   int TGPP2_MEID = 1471;
 
+  /********************************************************/
+  /*** SLh interface (GMLC - HSS) AVPs (3GPP TS 29.173) ***/
+  /********************************************************/
+
+  /**
+   * SLh (3GPP TS 29.173) LMSI AVP code
+   */
+  int LMSI = 2400;
+
+  /**
+   * SLh (3GPP TS 29.173) Serving-Node AVP code
+   */
+  int SERVING_NODE = 2401;
+
+  /**
+   * SLh (3GPP TS 29.173) MME-Name AVP code
+   */
+  int MME_NAME = 2402;
+
+  /**
+   * SLh (3GPP TS 29.173) MCS-Number AVP code
+   */
+  int MSC_NUMBER = 2403;
+
+  /**
+   * SLh (3GPP TS 29.173) LCS-Capabilities-Sets AVP code
+   */
+  int LCS_CAPABILITIES_SETS = 2404;
+
+  /**
+   * SLh (3GPP TS 29.173) GMLC-Address AVP code
+   */
+  int GMLC_ADDRESS = 2405;
+
+  /**
+   * SLh (3GPP TS 29.173) Additional-Serving-Node AVP code
+   */
+  int ADDITIONAL_SERVING_NODE = 2406;
+
+  /**
+   * SLh (3GPP TS 29.173) PPR-Address AVP code
+   */
+  int PPR_ADDRESS = 2407;
+
+  /**
+   * SLh (3GPP TS 29.173) MME-Realm AVP code
+   */
+  int MME_REALM = 2408;
+
+  /**
+   * SLh (3GPP TS 29.173) SGSN-Name AVP code
+   */
+  int SGSN_NAME = 2409;
+
+  /**
+   * SLh (3GPP TS 29.173) SGSN-Realm AVP code
+   */
+  int SGSN_REALM = 2410;
+
+  /**
+   * SLh (3GPP TS 29.173) RIA-Flags AVP code
+   */
+  int RIA_FLAGS = 2411;
+
+  /**
+   * SLh (3GPP TS 29.173) SGSN-Number AVP code (reused from 3GPP TS 29.272, MME - SGSN interface)
+   */
+  int SGSN_NUMBER = 1489;
+
+  /**
+   * SLh (3GPP TS 29.173) GMLC-Number AVP code (reused from 3GPP TS 29.272, MME - SGSN interface)
+   */
+  int GMLC_NUMBER = 1474;
+
+  /**
+   * SLh (3GPP TS 29.173) 3GPP-AAA-Server-Name AVP code (reused from 3GPP TS 29.273, 3GPP AAA EPS interface)
+   */
+  int TGPP_AAA_SERVER_NAME = 318;
+
+  // SLh re-used Diameter AVPs:
+  // MSISDN 3GPP TS 29.329;
+  // SGSN-Number 3GPP TS 29.272;
+  // Supported-Features 3GPP TS 29.229;
+  // Feature-List-ID 3GPP TS 29.229;
+  // Feature-List 3GPP TS 29.229;
+  // GMLC-Number 3GPP TS 29.272;
+  // 3GPP-AAA-Server-Name 3GPP TS 29.273
+
+  /********************************************************/
+  /*** SLg interface (GMLC - MME) AVPs (3GPP TS 29.172) ***/
+  /*** Diameter ELP Application (EPC LCS Protocol) ***/
+  /********************************************************/
+
+  /**
+   * SLg (3GPP TS 29.172) SLg-Location-Type AVP code
+   */
+  int SLG_LOCATION_TYPE = 2500;
+
+  /**
+   * SLg (3GPP TS 29.172) LCS-EPS-Client-Name AVP code
+   */
+  int LCS_EPS_CLIENT_NAME = 2501;
+
+  /**
+   * SLg (3GPP TS 29.172) LCS_Requestor_Name AVP code
+   */
+  int LCS_REQUESTOR_NAME = 2502;
+
+  /**
+   * SLg (3GPP TS 29.172) LCS-Priority AVP code
+   */
+  int LCS_PRIORITY = 2503;
+
+  /**
+   * SLg (3GPP TS 29.172) LCS-QoS AVP code
+   */
+  int LCS_QOS = 2504;
+
+  /**
+   * SLg (3GPP TS 29.172) Horizontal-Accuracy AVP code
+   */
+  int HORIZONTAL_ACCURACY = 2505;
+
+  /**
+   * SLg (3GPP TS 29.172) Vertical-Accuracy AVP code
+   */
+  int VERTICAL_ACCURACY = 2506;
+
+  /**
+   * SLg (3GPP TS 29.172) Vertical-Requested AVP code
+   */
+  int VERTICAL_REQUESTED = 2507;
+
+  /**
+   * SLg (3GPP TS 29.172) Velocity-Requested AVP code
+   */
+  int VELOCITY_REQUESTED = 2508;
+
+  /**
+   * SLg (3GPP TS 29.172) Response-Time AVP code
+   */
+  int RESPONSE_TIME = 2509;
+
+  /**
+   * SLg (3GPP TS 29.172) LCS-Supported-GAD-Shapes AVP code
+   */
+  int LCS_SUPPORTED_GAD_SHAPES = 2510;
+
+  /**
+   * SLg (3GPP TS 29.172) LCS-Codeword AVP code
+   */
+  int LCS_CODEWORD = 2511;
+
+  /**
+   * SLg (3GPP TS 29.172) LCS-Privacy-Check AVP code
+   */
+  int LCS_PRIVACY_CHECK = 2512;
+
+  /**
+   * SLg (3GPP TS 29.172) Accuracy-Fulfilment-Indicator AVP code
+   */
+  int ACCURACY_FULFILMENT_INDICATOR = 2513;
+
+  /**
+   * SLg (3GPP TS 29.172) Age-Of-Location-Estimate AVP code
+   */
+  int AGE_OF_LOCATION_ESTIMATE = 2514;
+
+  /**
+   * SLg (3GPP TS 29.172) Velocity-Estimate 2515 AVP code
+   */
+  int VELOCITY_ESTIMATE = 2515;
+
+  /**
+   * SLg (3GPP TS 29.172) EUTRAN-Positioning-Data AVP code
+   */
+  int EUTRAN_POSITIONING_DATA = 2516;
+
+  /**
+   * SLg (3GPP TS 29.172) ECGI AVP code
+   */
+  int ECGI = 2517;
+
+  /**
+   * SLg (3GPP TS 29.172) Location_Event AVP code
+   */
+  int LOCATION_EVENT = 2518;
+
+  /**
+   * SLg (3GPP TS 29.172) Pseudonym-Indicator
+   */
+  int PSEUDONYM_INDICATOR = 2519;
+
+  /**
+   * SLg (3GPP TS 29.172) LCS-Service-Type-ID AVP Code
+   */
+  int LCS_SERVICE_TYPE_ID = 2520;
+
+  /**
+   * SLg (3GPP TS 29.172) LCS-Privacy-Check-Non-Session AVP Code
+   */
+  int LCS_PRIVACY_CHECK_NON_SESSION = 2521;
+
+  /**
+   * SLg (3GPP TS 29.172) LCS-Privacy-Check-Session AVP Code
+   */
+  int LCS_PRIVACY_CHECK_SESSION = 2522;
+
+  /**
+   * SLg (3GPP TS 29.172) LCS-QoS-Class AVP Code
+   */
+  int LCS_QOS_CLASS = 2523;
+
+  /**
+   * SLg (3GPP TS 29.172) GERAN-Positioning-Info AVP Code
+   */
+  int GERAN_POSITIONING_INFO = 2524;
+
+  /**
+   * SLg (3GPP TS 29.172) GERAN-Positioning-Data AVP Code
+   */
+  int GERAN_POSITIONING_DATA = 2525;
+
+  /**
+   * SLg (3GPP TS 29.172) GERAN-GANSS-Positioning-Data AVP Code
+   */
+  int GERAN_GANSS_POSITIONING_DATA = 2526;
+
+  /**
+   * SLg (3GPP TS 29.172) UTRAN-Positioning-Info AVP Code
+   */
+  int UTRAN_POSITIONING_INFO = 2527;
+
+  /**
+   * SLg (3GPP TS 29.172) UTRAN-Positioning-Data AVP Code
+   */
+  int UTRAN_POSITIONING_DATA = 2528;
+
+  /**
+   * SLg (3GPP TS 29.172) UTRAN-GANSS-Positioning-Data AVP Code
+   */
+  int UTRAN_GANSS_POSITIONING_DATA = 2529;
+
+  /**
+   * SLg (3GPP TS 29.172) LRR-Flags AVP Code
+   */
+  int LRR_FLAGS = 2530;
+
+  /**
+   * SLg (3GPP TS 29.172) LCS-Reference-Number AVP Code
+   */
+  int LCS_REFERENCE_NUMBER = 2531;
+
+  /**
+   * SLg (3GPP TS 29.172) Deferred-Location-Type AVP Code
+   */
+  int DEFERRED_LOCATION_TYPE = 2532;
+
+  /**
+   * SLg (3GPP TS 29.172) Area-Event-Info AVP Code
+   */
+  int AREA_EVENT_INFO = 2533;
+
+  /**
+   * SLg (3GPP TS 29.172) Area-Definition AVP Code
+   */
+  int AREA_DEFINITION = 2534;
+
+  /**
+   * SLg (3GPP TS 29.172) Area AVP Code
+   */
+  int AREA = 2535;
+
+  /**
+   * SLg (3GPP TS 29.172) Area-Type AVP Code
+   */
+  int AREA_TYPE = 2536;
+
+  /**
+   * SLg (3GPP TS 29.172) Area-Identification AVP Code
+   */
+  int AREA_IDENTIFICATION = 2537;
+
+  /**
+   * SLg (3GPP TS 29.172) Occurrence-Info AVP Code
+   */
+  int OCCURRENCE_INFO = 2538;
+
+  /**
+   * SLg (3GPP TS 29.172) Interval-Time AVP Code
+   */
+  int INTERVAL_TIME = 2539;
+
+  /**
+   * SLg (3GPP TS 29.172) Periodic-LDR-Information AVP Code
+   */
+  int PERIODIC_LDR_INFORMATION = 2540;
+
+  /**
+   * SLg (3GPP TS 29.172) Reporting-Amount AVP Code
+   */
+  int REPORTING_AMOUNT = 2541;
+
+  /**
+   * SLg (3GPP TS 29.172) Reporting-Interval AVP Code
+   */
+  int REPORTING_INTERVAL = 2542;
+
+  /**
+   * SLg (3GPP TS 29.172) Reporting-PLMN-List AVP Code
+   */
+  int REPORTING_PLMN_LIST = 2543;
+
+  /**
+   * SLg (3GPP TS 29.172) PLMN-ID-List AVP Code
+   */
+  int PLMN_ID_LIST = 2544;
+
+  /**
+   * SLg (3GPP TS 29.172) PLR-Flags AVP Code
+   */
+  int PLR_FLAGS = 2545;
+
+  /**
+   * SLg (3GPP TS 29.172) PLA-Flags AVP Code
+   */
+  int PLA_FLAGS = 2546;
+
+  /**
+   * SLg (3GPP TS 29.172) Deferred-MT-LR-Data AVP Code
+   */
+  int DEFERRED_MT_LR_DATA = 2547;
+
+  /**
+   * SLg (3GPP TS 29.172) Termination-Cause AVP Code;
+   */
+  int TERMINATION_CAUSE_LCS = 2548;
+
+  /**
+   * SLg (3GPP TS 29.172) LRA-Flags AVP Code
+   */
+  int LRA_FLAGS = 2549;
+
+  /**
+   * SLg (3GPP TS 29.172) Periodic-Location-Support-Indicator AVP Code
+   */
+  int PERIODIC_LOCATION_SUPPORT_INDICATOR = 2550;
+
+  /**
+   * SLg (3GPP TS 29.172)
+   */
+  int PRIORITIZED_LIST_INDICATOR = 2551;
+
+  /**
+   * SLg (3GPP TS 29.172)ESMLC-Cell-Info AVP Code
+   */
+  int ESMLC_CELL_INFO = 2552;
+
+  /**
+   * SLg (3GPP TS 29.172) Cell-Portion-ID AVP Code
+   */
+  int CELL_PORTION_ID = 2553;
+
+  /**
+   * SLg (3GPP TS 29.172) 1xRTT-RCID AVP Code
+   */
+  int ONEXRTT_RCID = 2554;
+
+  /**
+   * SLg (3GPP TS 29.172) Civic-Address AVP Code
+   */
+  int CIVIC_ADDRESS = 2556;
+
+  /**
+   * SLg (3GPP TS 29.172) Barometric-Pressure AVP Code
+   */
+  int BAROMETRIC_PRESSURE = 2557;
+
+  /**
+   * SLg (3GPP TS 29.172) UTRAN-Additional-Positioning-Data AVP Code
+   */
+  int UTRAN_ADDITIONAL_POSITIONING_DATA = 2558;
+
+  /**
+   * SLg (3GPP TS 29.172) Motion-Event-Info
+   */
+  int MOTION_EVENT_INFO = 2559;
+
+  /**
+   * SLg (3GPP TS 29.172) Linear-Distance
+   */
+  int LINEAR_DISTANCE = 2560;
+
+  /**
+   * SLg (3GPP TS 29.172) Maximum-Interval
+   */
+  int MAXIMUM_INTERVAL = 2561;
+
+
+  /**
+   * SLg (3GPP TS 29.172) Sampling-Interval
+   */
+  int SAMPLING_INTERVAL = 2562;
+
+
+  /**
+   * SLg (3GPP TS 29.172) Reporting-Duration
+   */
+  int REPORTING_DURATION = 2563;
+
+
+  /**
+   * SLg (3GPP TS 29.172) Reporting-Location-Requirements
+   */
+  int REPORTING_LOCATION_REQUIREMENTS = 2564;
+
+  /**
+   * SLg (3GPP TS 29.172) Additional-Area
+   */
+  int ADDITIONAL_AREA = 2565;
+
+  /**
+   * SLg (3GPP TS 29.172) Service-Selection AVP Code (reused from 3GPP TS 29.272 & IETF RFC 5778)
+   */
+  int SERVICE_SELECTION = 493;
+
+  /**
+   * SLg (3GPP TS 29.172) Cell-Global-Identity AVP Code (reused from 3GPP TS 29.272)
+   */
+  int CELL_GLOBAL_IDENTITY = 1604;
+
+  /**
+   * SLg (3GPP TS 29.172) Visited-PLMN-Id AVP Code (reused from 3GPP TS 29.272)
+   */
+  int VISITED_PLMN_ID = 1407;
+
+  /**
+   * SLg (3GPP TS 29.172) Service-Area-Identity AVP Code (reused from 3GPP TS 29.272)
+   */
+  int SERVICE_AREA_IDENTITY = 1607;
+
+  // Diameter ELP Application (SLg) reused AVPs:
+  // LCS-Format-Indicator 1237 3GPP TS 32.299;
+  // LCS-Name-String 1238 3GPP TS 2.299;
+  // LCS-Client-Type 1241 3GPP TS 32.299
+  // LCS-Requestor-Id-String 1240 3GPP TS 32.299;
+  // Location-Estimate 1242 3GPP TS 32.299;
+  // IMEI 1402 3GPP TS 29.272;
+  // MSISDN 701 3GPP TS 29.329;
+  // Service-Selection 493 3GPP TS 29.272, IETF RFC 5778
+  // User-Name 1 IETF RFC 3588;
+  // Supported-Features 628 3GPP TS 29.229;
+  // Feature-List-ID 629 3GPP TS 29.229;
+  // Feature-List 630 3GPP TS 29.229;
+  // Serving-Node 2401 3GPP TS 29.173;
+  // Cell-Global-Identity 1604 3GPP TS 29.272;
+  // Service-Area-Identity 1607 3GPP TS 29.272;
+  // GMLC-Address 2405 3GPP TS 29.173;
+  // Visited-PLMN-Id 1407 3GPP TS 29.272
 
   /**
    * @return the AVP code.
