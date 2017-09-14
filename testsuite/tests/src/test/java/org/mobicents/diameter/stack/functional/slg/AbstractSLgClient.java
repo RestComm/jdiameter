@@ -248,9 +248,12 @@ public abstract class AbstractSLgClient extends TBase implements ClientSLgSessio
     }
 
     // { Origin-Host }
-    reqSet.removeAvp(Avp.ORIGIN_HOST);
-    reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
+    // { Origin-Realm }
 
+    // { Destination-Host }
+    reqSet.addAvp(Avp.DESTINATION_HOST, serverHost, true);
+
+    // { Destination-Realm }
 
     // { SLg-Location-Type }
     int slgLocationType = getSLgLocationType();
@@ -375,7 +378,7 @@ public abstract class AbstractSLgClient extends TBase implements ClientSLgSessio
     }
 
     // [ LCS-Privacy-Check-Non-Session ] // IE: Non-Session-Related Privacy Check
-    AvpSet lcsPrivacyCheckNonSession = reqSet.addGroupedAvp(Avp.LCS_PRIVACY_CHECK_SESSION, 10415, false, false);
+    AvpSet lcsPrivacyCheckNonSession = reqSet.addGroupedAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION, 10415, false, false);
     int lcsPrivacyCheckNS = getLCSPrivacyCheckNonSession();
 
     if (lcsPrivacyCheckNS != -1){
@@ -570,7 +573,7 @@ public abstract class AbstractSLgClient extends TBase implements ClientSLgSessio
 */
     AvpSet reportingPLMNList = set.addGroupedAvp(Avp.REPORTING_PLMN_LIST, 10415, false, false);
     int prioritizedListIndicator = getPrioritizedListIndicator();
-    AvpSet plmnIdList = set.addGroupedAvp(Avp.PLMN_ID_LIST, 10415, false, false);
+    AvpSet plmnIdList = reportingPLMNList.addGroupedAvp(Avp.PLMN_ID_LIST, 10415, false, false);
     byte[] visitedPLMNId = getVisitedPLMNId();
     int periodicLocationSupportIndicator = getPeriodicLocationSupportIndicator();
 

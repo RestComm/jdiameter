@@ -5442,6 +5442,7 @@
   <!-- 3GPP TS 29.214 Release 7, 3GPP TS 29.214 V6.6.0 (2007-06)-->
 
     <!-- 3GPP Gx Application -->
+<!--
     <command name="Re-Auth-Answer"  code="258" vendor-id="TGPP" request="false">
       <avp name="Session-Id" code="263" vendor="0" multiplicity="1" index="0" />
       <avp name="Origin-Host" code="264" vendor="0" multiplicity="1" index="-1" />
@@ -5466,7 +5467,7 @@
       <avp name="Charging-Rule-Install" code="1001" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Charging-Rule-Remove" code="1002" vendor="10415" multiplicity="0-1" index="-1" />
       <avp name="Origin-State-Id" code="278" vendor="0" multiplicity="1" index="-1" />
-      <avp name="Route-Record" code="282" vendor="0" multiplicity="1" index="-1" />
+      <avp name="Route-Record" code="282" vendor="0" multiplicity="0+" index="-1" />
     </command>
 
     <command name="Credit-Control-Answer"  code="272" vendor-id="TGPP" request="false">
@@ -5511,6 +5512,7 @@
       <avp name="Access-Network-Charging-Address" code="501" vendor="10415" multiplicity="1" index="-1" />
       <avp name="Access-Network-Charging-Identifier-Gx" code="1022" vendor="10415" multiplicity="1" index="-1" />
     </command>
+-->
   </application>
 
   <!-- ************************** 3GPP Rx AVPS ********************* -->
@@ -8198,7 +8200,7 @@
 
   <avpdefn name="Area-Definition" code="2534" vendor-id="TGPP" mandatory="mustnot" protected="mustnot" may-encrypt="no" vendor-bit="must" >
     <grouped>
-      <avp name="Area" multiplicity="1-10" />
+      <avp name="Area" multiplicity="1+" /> <!-- 1-10 -->
       <avp name="Additional-Area" multiplicity="0-240" />
     </grouped>
   </avpdefn>
@@ -8246,7 +8248,7 @@
 
   <avpdefn name="Reporting-PLMN-List" code="2543" vendor-id="TGPP" mandatory="mustnot" protected="mustnot" may-encrypt="no" vendor-bit="must" >
     <grouped>
-      <avp name="PLMN-ID-List" multiplicity="1-20" />
+      <avp name="PLMN-ID-List" multiplicity="1+" /> <!-- 1-20 -->
       <avp name="Prioritized-List-Indicator" multiplicity="0-1" />
     </grouped>
   </avpdefn>

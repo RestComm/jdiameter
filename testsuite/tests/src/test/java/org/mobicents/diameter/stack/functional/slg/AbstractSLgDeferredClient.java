@@ -219,7 +219,7 @@ public abstract class AbstractSLgDeferredClient extends TBase implements ClientS
 */
     AvpSet reportingPLMNList = set.addGroupedAvp(Avp.REPORTING_PLMN_LIST, 10415, false, false);
     int prioritizedListIndicator = getPrioritizedListIndicator();
-    AvpSet plmnIdList = set.addGroupedAvp(Avp.PLMN_ID_LIST, 10415, false, false);
+    AvpSet plmnIdList = reportingPLMNList.addGroupedAvp(Avp.PLMN_ID_LIST, 10415, false, false);
     byte[] visitedPLMNId = getVisitedPLMNId();
     int periodicLocationSupportIndicator = getPeriodicLocationSupportIndicator();
 

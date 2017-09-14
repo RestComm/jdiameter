@@ -268,7 +268,7 @@ public abstract class AbstractClient extends TBase implements ClientCCASessionLi
     // ccrAvps.addAvp(Avp.DESTINATION_REALM, realmName, true);
 
     // { Auth-Application-Id }
-    ccrAvps.addAvp(Avp.AUTH_APPLICATION_ID, 4);
+    // ccrAvps.addAvp(Avp.AUTH_APPLICATION_ID, 4);
 
     // { Service-Context-Id }
     // 8.42. Service-Context-Id AVP

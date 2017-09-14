@@ -52,11 +52,9 @@ public class ClientMAR extends AbstractClient {
 
   public void sendMultimediaAuth() throws Exception {
 
+    // < Multimedia-Auth-Request > ::= < Diameter Header: 303, REQ, PXY, 16777216 >
     JMultimediaAuthRequest request = new JMultimediaAuthRequestImpl(super.createRequest(this.clientCxDxSession, JMultimediaAuthRequest.code));
     AvpSet reqSet = request.getMessage().getAvps();
-
-    reqSet.addAvp(Avp.SERVER_NAME, "ala", getApplicationId().getVendorId(), true, false, false);
-    // < Multimedia-Auth-Request > ::= < Diameter Header: 303, REQ, PXY, 16777216 >
     // < Session-Id >
     // { Vendor-Specific-Application-Id }
     // { Auth-Session-State }
@@ -65,19 +63,18 @@ public class ClientMAR extends AbstractClient {
     // { Destination-Realm }
     // [ Destination-Host ]
     // { User-Name }
+    reqSet.addAvp(Avp.USER_NAME, "myUsername", true, false, false);
+    // [ OC-Supported-Features ]
     // *[ Supported-Features ]
     // { Public-Identity }
-    AvpSet userIdentity = reqSet.addGroupedAvp(Avp.USER_IDENTITY, getApplicationId().getVendorId(), true, false);
-    // User-Identity ::= <AVP header: 700 10415>
-    // [Public-Identity]
-    userIdentity.addAvp(Avp.PUBLIC_IDENTITY, "tralalalal user", getApplicationId().getVendorId(), true, false, false);
+    reqSet.addAvp(Avp.PUBLIC_IDENTITY, "tralalalal user", getApplicationId().getVendorId(), true, false, false);
     // [MSISDN]
     // *[AVP]
     // { SIP-Auth-Data-Item }
     // seriously ....
     reqSet.addGroupedAvp(Avp.SIP_AUTH_DATA_ITEM, getApplicationId().getVendorId(), true, false);
     // { SIP-Number-Auth-Items }
-    reqSet.addAvp(Avp.SIP_NUMBER_AUTH_ITEMS, getApplicationId().getVendorId(), 1, true, false, true);
+    reqSet.addAvp(Avp.SIP_NUMBER_AUTH_ITEMS, 1, getApplicationId().getVendorId(), true, false, true);
     // { Server-Name }
     reqSet.addAvp(Avp.SERVER_NAME, "ala", getApplicationId().getVendorId(), true, false, false);
     // *[ AVP ]

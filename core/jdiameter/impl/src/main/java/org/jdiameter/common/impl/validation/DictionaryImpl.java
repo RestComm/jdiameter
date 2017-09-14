@@ -112,6 +112,9 @@ public class DictionaryImpl implements Dictionary {
 
   public static DictionaryImpl getInstance(InputStream is) {
     if (is == null) {
+      if (INSTANCE != null) {
+        return INSTANCE;
+      }
       // Maintaining 1.7.0 behaviour
       String confFile = "dictionary.xml";
       is = getInputStream(confFile);
@@ -122,6 +125,9 @@ public class DictionaryImpl implements Dictionary {
 
   public static DictionaryImpl getInstance(String confFile) {
     if (confFile == null) {
+      if (INSTANCE != null) {
+        return INSTANCE;
+      }
       confFile = "dictionary.xml";
     }
     InputStream is = getInputStream(confFile);

@@ -72,12 +72,6 @@ public class ClientUDR extends AbstractClient {
     AvpSet avpSet = request.getMessage().getAvps();
     // < User-Data -Request> ::= < Diameter Header: 306, REQ, PXY, 16777217 >
     // < Session-Id >
-    AvpSet vendorSpecificApplicationId = avpSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-    // 1* [ Vendor-Id ]
-    vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-    // 0*1{ Auth-Application-Id }
-    vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-    // 0*1{ Acct-Application-Id }
     // { Auth-Session-State }
     avpSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     // { Origin-Host }
@@ -88,11 +82,14 @@ public class ClientUDR extends AbstractClient {
     // { Destination-Realm }
     // *[ Supported-Features ]
     // { User-Identity }
+    AvpSet uiSet = avpSet.addGroupedAvp(Avp.USER_IDENTITY, getApplicationId().getVendorId(), true, false);
+    uiSet.addAvp(Avp.PUBLIC_IDENTITY, "public-identity", getApplicationId().getVendorId(), true, false, false);
     // [ Wildcarded-PSI ]
     // [ Wildcarded-IMPU ]
     // [ Server-Name ]
     // *[ Service-Indication ]
     // *{ Data-Reference }
+    avpSet.addAvp(Avp.DATA_REFERENCE, 0, getApplicationId().getVendorId(), true, false, true);
     // *[ Identity-Set ]
     // [ Requested-Domain ]
     // [ Current-Location ]

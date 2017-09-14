@@ -140,18 +140,12 @@ public class ServerPNR extends org.mobicents.diameter.stack.functional.sh.Abstra
     // < Push-Notification-Request > ::= < Diameter Header: 309, REQ, PXY, 16777217 >
     // < Session-Id >
     // { Vendor-Specific-Application-Id }
-    AvpSet vendorSpecificApplicationId = avpSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-    // 1* [ Vendor-Id ]
-    vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-    // 0*1{ Auth-Application-Id }
-    vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-    // avpSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
+    // { Auth-Session-State }
+    avpSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     // { Origin-Host }
-    avpSet.removeAvp(Avp.ORIGIN_HOST);
-    avpSet.addAvp(Avp.ORIGIN_HOST, getServerURI(), true);
     // { Origin-Realm }
     // { Destination-Host }
-    avpSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
+    avpSet.addAvp(Avp.DESTINATION_HOST, clientHost, true);
     // { Destination-Realm }
     // *[ Supported-Features ]
     // { User-Identity }
@@ -164,7 +158,7 @@ public class ServerPNR extends org.mobicents.diameter.stack.functional.sh.Abstra
     // [ Wildcarded-PSI ]
     // [ Wildcarded-IMPU ]
     // { User-Data }
-    avpSet.addAvp(Avp.USER_DATA_SH, "<xml><morexml></morexml></xml>", true);
+    avpSet.addAvp(Avp.USER_DATA_SH, "<xml><morexml></morexml></xml>", getApplicationId().getVendorId(), true, false, false);
     // *[ AVP ]
     // *[ Proxy-Info ]
     // *[ Route-Record ]

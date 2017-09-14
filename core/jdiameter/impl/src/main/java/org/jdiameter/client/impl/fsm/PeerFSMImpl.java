@@ -70,6 +70,7 @@ import org.jdiameter.api.app.StateChangeListener;
 import org.jdiameter.api.app.StateEvent;
 import org.jdiameter.api.validation.AvpNotAllowedException;
 import org.jdiameter.api.validation.Dictionary;
+import org.jdiameter.api.validation.ValidatorLevel;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.fsm.EventTypes;
 import org.jdiameter.client.api.fsm.FsmEvent;
@@ -334,9 +335,12 @@ public class PeerFSMImpl implements IStateMachine {
       logger.debug("No FSM threads are running so calling runQueueProcessing()");
       runQueueProcessing();
     }
-    if (event.getData() != null && dictionary != null && dictionary.isEnabled()) {
+
+    // check if validation is required
+    if (event.getData() != null) {
       boolean incoming = event.getType() == EventTypes.RECEIVE_MSG_EVENT;
-      if (incoming) {
+      ValidatorLevel incomingLevel = dictionary.getReceiveLevel();
+      if (incoming && dictionary != null && dictionary.isEnabled() && incomingLevel != ValidatorLevel.OFF) {
         logger.debug("Performing validation to INCOMING message since validator is ENABLED.");
         // outgoing are done elsewhere: see BaseSessionImpl
         try {
@@ -347,9 +351,10 @@ public class PeerFSMImpl implements IStateMachine {
           return false;
         }
       }
-    }
-    else {
-      logger.debug("Not performing validation to message since validator is DISABLED.");
+      else {
+        logger.debug("Not performing incoming validation on message. Validator Enabled [{}] Incoming [{}] Incoming Level [{}]",
+            new Object[] { (dictionary != null && dictionary.isEnabled()), incoming, incomingLevel });
+      }
     }
 
     boolean rc = false;

@@ -73,12 +73,6 @@ public class ClientSNR extends AbstractClient {
     // < Subscribe-Notifications-Request > ::= < Diameter Header: 308, REQ, PXY, 16777217 >
     // < Session-Id >
     // { Vendor-Specific-Application-Id }
-    AvpSet vendorSpecificApplicationId = avpSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-    // 1* [ Vendor-Id ]
-    vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-    // 0*1{ Auth-Application-Id }
-    vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-    // 0*1{ Acct-Application-Id }
     // { Auth-Session-State }
     avpSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     // { Origin-Host }
@@ -89,14 +83,17 @@ public class ClientSNR extends AbstractClient {
     // { Destination-Realm }
     // *[ Supported-Features ]
     // { User-Identity }
+    AvpSet uiSet = avpSet.addGroupedAvp(Avp.USER_IDENTITY, getApplicationId().getVendorId(), true, false);
+    uiSet.addAvp(Avp.PUBLIC_IDENTITY, "public-identity", getApplicationId().getVendorId(), true, false, false);
     // [ Wildcarded-PSI ]
     // [ Wildcarded-IMPU ]
     // *[ Service-Indication ]
     // [ Send-Data-Indication ]
     // [ Server-Name ]
     // { Subs-Req-Type }
+    avpSet.addAvp(Avp.SUBS_REQ_TYPE, 0, getApplicationId().getVendorId(), true, false, true);
     // *{ Data-Reference }
-    avpSet.addAvp(Avp.DATA_REFERENCE, 0);
+    avpSet.addAvp(Avp.DATA_REFERENCE, 0, getApplicationId().getVendorId(), true, false, true);
     // *[ Identity-Set ]
     // [ Expiry-Time ]
     // *[ DSAI-Tag ]

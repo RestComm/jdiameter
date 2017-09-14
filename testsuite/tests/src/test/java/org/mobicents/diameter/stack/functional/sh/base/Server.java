@@ -84,7 +84,7 @@ public class Server extends org.mobicents.diameter.stack.functional.sh.AbstractS
     set.removeAvp(Avp.DESTINATION_HOST);
     set.removeAvp(Avp.DESTINATION_REALM);
     set.addAvp(reqSet.getAvp(Avp.CC_REQUEST_TYPE), reqSet.getAvp(Avp.CC_REQUEST_NUMBER), reqSet.getAvp(Avp.AUTH_APPLICATION_ID));
-
+    set.addAvp(Avp.AUTH_SESSION_STATE, 1);
     this.serverShSession.sendSubscribeNotificationsAnswer(answer);
     Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), true);
 
@@ -104,6 +104,7 @@ public class Server extends org.mobicents.diameter.stack.functional.sh.AbstractS
     set.removeAvp(Avp.DESTINATION_HOST);
     set.removeAvp(Avp.DESTINATION_REALM);
     set.addAvp(reqSet.getAvp(Avp.CC_REQUEST_TYPE), reqSet.getAvp(Avp.CC_REQUEST_NUMBER), reqSet.getAvp(Avp.AUTH_APPLICATION_ID));
+    set.addAvp(Avp.AUTH_SESSION_STATE, 1);
     this.serverShSession.sendProfileUpdateAnswer(answer);
 
     Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), true);
@@ -123,6 +124,7 @@ public class Server extends org.mobicents.diameter.stack.functional.sh.AbstractS
     set.removeAvp(Avp.DESTINATION_HOST);
     set.removeAvp(Avp.DESTINATION_REALM);
     set.addAvp(reqSet.getAvp(Avp.CC_REQUEST_TYPE), reqSet.getAvp(Avp.CC_REQUEST_NUMBER), reqSet.getAvp(Avp.AUTH_APPLICATION_ID));
+    set.addAvp(Avp.AUTH_SESSION_STATE, 1);
     this.serverShSession.sendUserDataAnswer(answer);
 
     Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), true);
@@ -141,18 +143,11 @@ public class Server extends org.mobicents.diameter.stack.functional.sh.AbstractS
     // < Push-Notification-Request > ::= < Diameter Header: 309, REQ, PXY, 16777217 >
     // < Session-Id >
     // { Vendor-Specific-Application-Id }
-    AvpSet vendorSpecificApplicationId = avpSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-    // 1* [ Vendor-Id ]
-    vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-    // 0*1{ Auth-Application-Id }
-    vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-    // avpSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
+    avpSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     // { Origin-Host }
-    avpSet.removeAvp(Avp.ORIGIN_HOST);
-    avpSet.addAvp(Avp.ORIGIN_HOST, getServerURI(), true);
     // { Origin-Realm }
     // { Destination-Host }
-    avpSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
+    avpSet.addAvp(Avp.DESTINATION_HOST, clientHost, true);
     // { Destination-Realm }
     // *[ Supported-Features ]
     // { User-Identity }
@@ -165,7 +160,7 @@ public class Server extends org.mobicents.diameter.stack.functional.sh.AbstractS
     // [ Wildcarded-PSI ]
     // [ Wildcarded-IMPU ]
     // { User-Data }
-    avpSet.addAvp(Avp.USER_DATA_SH, "<xml><morexml></morexml></xml>", true);
+    avpSet.addAvp(Avp.USER_DATA_SH, "<xml><morexml></morexml></xml>", getApplicationId().getVendorId(), true, false, true);
     // *[ AVP ]
     // *[ Proxy-Info ]
     // *[ Route-Record ]

@@ -76,6 +76,7 @@ public class ServerSNR extends org.mobicents.diameter.stack.functional.sh.Abstra
     set.removeAvp(Avp.DESTINATION_HOST);
     set.removeAvp(Avp.DESTINATION_REALM);
     set.addAvp(reqSet.getAvp(Avp.CC_REQUEST_TYPE), reqSet.getAvp(Avp.CC_REQUEST_NUMBER), reqSet.getAvp(Avp.AUTH_APPLICATION_ID));
+    set.addAvp(Avp.AUTH_SESSION_STATE, 1);
     this.serverShSession.sendSubscribeNotificationsAnswer(answer);
     Utils.printMessage(log, super.stack.getDictionary(), answer.getMessage(), true);
 

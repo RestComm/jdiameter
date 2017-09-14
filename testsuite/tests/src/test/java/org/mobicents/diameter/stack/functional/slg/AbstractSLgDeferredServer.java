@@ -267,8 +267,12 @@ public abstract class AbstractSLgDeferredServer extends TBase implements ServerS
     }
 
     // { Origin-Host }
-    reqSet.removeAvp(Avp.ORIGIN_HOST);
-    reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
+    // { Origin-Realm }
+
+    // { Destination-Host }
+    reqSet.addAvp(Avp.DESTINATION_HOST, clientHost, true);
+
+    // { Destination-Realm }
 
     // { Location-Event }
     int locationEvent = getLocationEvent();

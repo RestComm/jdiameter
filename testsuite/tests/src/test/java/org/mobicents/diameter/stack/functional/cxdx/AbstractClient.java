@@ -165,12 +165,6 @@ public abstract class AbstractClient extends TBase implements ClientCxDxSessionL
     Request r = session.getSessions().get(0).createRequest(code, getApplicationId(), getServerRealmName());
 
     AvpSet reqSet = r.getAvps();
-    AvpSet vendorSpecificApplicationId = reqSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-    // 1* [ Vendor-Id ]
-    vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-    // 0*1{ Auth-Application-Id }
-    vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-    // 0*1{ Acct-Application-Id }
     // { Auth-Session-State }
     reqSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     // { Origin-Host }

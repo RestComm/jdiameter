@@ -125,6 +125,7 @@ public class ClientPNR extends AbstractClient {
     // [ Result-Code ]
     // [ Experimental-Result ]
     // { Auth-Session-State }
+    set.addAvp(Avp.AUTH_SESSION_STATE, 1);
     // { Origin-Host }
     // { Origin-Realm }
     // *[ Supported-Features ]

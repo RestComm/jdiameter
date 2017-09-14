@@ -65,10 +65,7 @@ public class ClientUAR extends AbstractClient {
     reqSet.addAvp(Avp.USER_NAME, "ala", false);
     // *[ Supported-Features ]
     // { Public-Identity }
-    AvpSet userIdentity = reqSet.addGroupedAvp(Avp.USER_IDENTITY, getApplicationId().getVendorId(), true, false);
-    // User-Identity ::= <AVP header: 700 10415>
-    // [Public-Identity]
-    userIdentity.addAvp(Avp.PUBLIC_IDENTITY, "tralalalal user", getApplicationId().getVendorId(), true, false, false);
+    reqSet.addAvp(Avp.PUBLIC_IDENTITY, "tralalalal user", getApplicationId().getVendorId(), true, false, false);
     // [MSISDN]
     // *[AVP]
     // { Visited-Network-Identifier }

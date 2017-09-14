@@ -62,12 +62,22 @@ public class ClientSAR extends AbstractClient {
     // [ Destination-Host ]
     // { Destination-Realm }
     // [ User-Name ]
+    // [ OC-Supported-Features ]
     // *[ Supported-Features ]
     // *[ Public-Identity ]
-    // [ Wildcarded-PSI ]
-    // [ Wildcarded-IMPU ]
+    // [ Wildcarded-Public-Identity ]
     // { Server-Name }
     reqSet.addAvp(Avp.SERVER_NAME, "ala", getApplicationId().getVendorId(), true, false, false);
+    // { Server-Assignment-Type }
+    reqSet.addAvp(Avp.SERVER_ASSIGNMENT_TYPE, 1, getApplicationId().getVendorId(), true, false, false);
+    // { User-Data-Already-Available }
+    reqSet.addAvp(Avp.USER_DATA_ALREADY_AVAILABLE, 1, getApplicationId().getVendorId(), true, false, false);
+    // [ SCSCF-Restoration-Info ]
+    // [ Multiple-Registration-Indication ]
+    // [ Session-Priority ]
+    // *[ AVP ]
+    // *[ Proxy-Info ]
+    // *[ Route-Record ]
 
     this.clientCxDxSession.sendServerAssignmentRequest(request);
     Utils.printMessage(log, super.stack.getDictionary(), request.getMessage(), true);

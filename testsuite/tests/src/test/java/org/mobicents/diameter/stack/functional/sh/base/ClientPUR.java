@@ -72,12 +72,6 @@ public class ClientPUR extends AbstractClient {
     AvpSet avpSet = request.getMessage().getAvps();
     // < Profile-Update-Request > ::= < Diameter Header: 307, REQ, PXY, 16777217 >
     // < Session-Id >
-    AvpSet vendorSpecificApplicationId = avpSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-    // 1* [ Vendor-Id ]
-    vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-    // 0*1{ Auth-Application-Id }
-    vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-    // 0*1{ Acct-Application-Id }
     // { Auth-Session-State }
     avpSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     // { Origin-Host }
@@ -98,9 +92,9 @@ public class ClientPUR extends AbstractClient {
     // [ Wildcarded-PSI ]
     // [ Wildcarded-IMPU ]
     // { Data-Reference }
-    avpSet.addAvp(Avp.DATA_REFERENCE, 0);
+    avpSet.addAvp(Avp.DATA_REFERENCE, 0, getApplicationId().getVendorId(), true, false, true);
     // { User-Data }
-
+    avpSet.addAvp(Avp.USER_DATA_SH, "<xml><morexml></morexml></xml>", getApplicationId().getVendorId(), true, false, false);
     // *[ AVP ]
     super.clientShSession.sendProfileUpdateRequest(request);
     Utils.printMessage(log, super.stack.getDictionary(), request.getMessage(), true);

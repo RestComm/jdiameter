@@ -33,6 +33,8 @@ import org.jdiameter.api.EventListener;
 import org.jdiameter.api.Network;
 import org.jdiameter.api.NetworkReqListener;
 import org.jdiameter.api.Request;
+import org.jdiameter.api.validation.ValidatorLevel;
+import org.jdiameter.common.impl.validation.DictionaryImpl;
 import org.jdiameter.server.impl.StackImpl;
 import org.jdiameter.server.impl.helpers.XMLConfiguration;
 
@@ -82,6 +84,11 @@ public class StackCreator extends StackImpl {
 
       // Let it stabilize...
       Thread.sleep(500);
+
+      // Let's do it right and enable all validation levels!
+      DictionaryImpl.INSTANCE.setEnabled(true);
+      DictionaryImpl.INSTANCE.setReceiveLevel(ValidatorLevel.ALL);
+      DictionaryImpl.INSTANCE.setSendLevel(ValidatorLevel.ALL);
 
       Network network = unwrap(Network.class);
 

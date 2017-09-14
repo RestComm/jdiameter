@@ -248,9 +248,12 @@ public abstract class AbstractSLgImmediateClient extends TBase implements Client
     }
 
     // { Origin-Host }
-    reqSet.removeAvp(Avp.ORIGIN_HOST);
-    reqSet.addAvp(Avp.ORIGIN_HOST, getClientURI(), true);
+    // { Origin-Realm }
 
+    // { Destination-Host }
+    reqSet.addAvp(Avp.DESTINATION_HOST, serverHost, true);
+
+    // { Destination-Realm }
 
     // { SLg-Location-Type }
     int slgLocationType = getSLgLocationType();
@@ -375,7 +378,7 @@ public abstract class AbstractSLgImmediateClient extends TBase implements Client
     }
 
     // [ LCS-Privacy-Check-Non-Session ] // IE: Non-Session-Related Privacy Check
-    AvpSet lcsPrivacyCheckNonSession = reqSet.addGroupedAvp(Avp.LCS_PRIVACY_CHECK_SESSION, 10415, false, false);
+    AvpSet lcsPrivacyCheckNonSession = reqSet.addGroupedAvp(Avp.LCS_PRIVACY_CHECK_NON_SESSION, 10415, false, false);
     int lcsPrivacyCheckNS = getLCSPrivacyCheckNonSession();
 
     if (lcsPrivacyCheckNS != -1){

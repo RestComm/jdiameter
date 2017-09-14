@@ -82,12 +82,6 @@ public class Client extends AbstractClient {
     // < Subscribe-Notifications-Request > ::= < Diameter Header: 308, REQ, PXY, 16777217 >
     // < Session-Id >
     // { Vendor-Specific-Application-Id }
-    AvpSet vendorSpecificApplicationId = avpSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-    // 1* [ Vendor-Id ]
-    vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-    // 0*1{ Auth-Application-Id }
-    vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-    // 0*1{ Acct-Application-Id }
     // { Auth-Session-State }
     avpSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     // { Origin-Host }
@@ -98,14 +92,19 @@ public class Client extends AbstractClient {
     // { Destination-Realm }
     // *[ Supported-Features ]
     // { User-Identity }
+    AvpSet userIdentity = avpSet.addGroupedAvp(Avp.USER_IDENTITY, getApplicationId().getVendorId(), true, false);
+    // User-Identity ::= <AVP header: 700 10415>
+    // [Public-Identity]
+    userIdentity.addAvp(Avp.PUBLIC_IDENTITY, "tralalalal user", getApplicationId().getVendorId(), true, false, false);
     // [ Wildcarded-PSI ]
     // [ Wildcarded-IMPU ]
     // *[ Service-Indication ]
     // [ Send-Data-Indication ]
     // [ Server-Name ]
     // { Subs-Req-Type }
+    avpSet.addAvp(Avp.SUBS_REQ_TYPE, 0, getApplicationId().getVendorId(), true, false, true);
     // *{ Data-Reference }
-    avpSet.addAvp(Avp.DATA_REFERENCE, 0);
+    avpSet.addAvp(Avp.DATA_REFERENCE, 0, getApplicationId().getVendorId(), true, false, true);
     // *[ Identity-Set ]
     // [ Expiry-Time ]
     // *[ DSAI-Tag ]
@@ -125,12 +124,6 @@ public class Client extends AbstractClient {
     AvpSet avpSet = request.getMessage().getAvps();
     // < Profile-Update-Request > ::= < Diameter Header: 307, REQ, PXY, 16777217 >
     // < Session-Id >
-    AvpSet vendorSpecificApplicationId = avpSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-    // 1* [ Vendor-Id ]
-    vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-    // 0*1{ Auth-Application-Id }
-    vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-    // 0*1{ Acct-Application-Id }
     // { Auth-Session-State }
     avpSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     // { Origin-Host }
@@ -151,8 +144,9 @@ public class Client extends AbstractClient {
     // [ Wildcarded-PSI ]
     // [ Wildcarded-IMPU ]
     // { Data-Reference }
-    avpSet.addAvp(Avp.DATA_REFERENCE, 0);
+    avpSet.addAvp(Avp.DATA_REFERENCE, 0, getApplicationId().getVendorId(), true, false, true);
     // { User-Data }
+    avpSet.addAvp(Avp.USER_DATA_SH, "<xml><morexml></morexml></xml>", getApplicationId().getVendorId(), true, false, false);
 
     // *[ AVP ]
     super.clientShSession.sendProfileUpdateRequest(request);
@@ -167,12 +161,6 @@ public class Client extends AbstractClient {
     AvpSet avpSet = request.getMessage().getAvps();
     // < User-Data -Request> ::= < Diameter Header: 306, REQ, PXY, 16777217 >
     // < Session-Id >
-    AvpSet vendorSpecificApplicationId = avpSet.addGroupedAvp(Avp.VENDOR_SPECIFIC_APPLICATION_ID, 0, false, false);
-    // 1* [ Vendor-Id ]
-    vendorSpecificApplicationId.addAvp(Avp.VENDOR_ID, getApplicationId().getVendorId(), true);
-    // 0*1{ Auth-Application-Id }
-    vendorSpecificApplicationId.addAvp(Avp.AUTH_APPLICATION_ID, getApplicationId().getAuthAppId(), true);
-    // 0*1{ Acct-Application-Id }
     // { Auth-Session-State }
     avpSet.addAvp(Avp.AUTH_SESSION_STATE, 1);
     // { Origin-Host }
@@ -195,7 +183,7 @@ public class Client extends AbstractClient {
     // [ Server-Name ]
     // *[ Service-Indication ]
     // *{ Data-Reference }
-    avpSet.addAvp(Avp.DATA_REFERENCE, 0);
+    avpSet.addAvp(Avp.DATA_REFERENCE, 0, getApplicationId().getVendorId(), true, false, true);
     // *[ Identity-Set ]
     // [ Requested-Domain ]
     // [ Current-Location ]
@@ -238,6 +226,7 @@ public class Client extends AbstractClient {
     // [ Result-Code ]
     // [ Experimental-Result ]
     // { Auth-Session-State }
+    set.addAvp(Avp.AUTH_SESSION_STATE, 1);
     // { Origin-Host }
     // { Origin-Realm }
     // *[ Supported-Features ]

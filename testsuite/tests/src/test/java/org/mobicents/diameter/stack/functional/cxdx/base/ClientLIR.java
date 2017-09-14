@@ -67,10 +67,7 @@ public class ClientLIR extends AbstractClient {
     // [ Originating-Request ]
     // *[ Supported-Features ]
     // { Public-Identity }
-    AvpSet userIdentity = reqSet.addGroupedAvp(Avp.USER_IDENTITY, getApplicationId().getVendorId(), true, false);
-    // User-Identity ::= <AVP header: 700 10415>
-    // [Public-Identity]
-    userIdentity.addAvp(Avp.PUBLIC_IDENTITY, "tralalalal user", getApplicationId().getVendorId(), true, false, false);
+    reqSet.addAvp(Avp.PUBLIC_IDENTITY, "tralalalal user", getApplicationId().getVendorId(), true, false, false);
     // [MSISDN]
     // *[AVP]
     // [ User-Authorization-Type ]

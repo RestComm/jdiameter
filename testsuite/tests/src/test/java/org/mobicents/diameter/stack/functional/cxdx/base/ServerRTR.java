@@ -88,6 +88,7 @@ public class ServerRTR extends AbstractServer {
     // { Origin-Host }
     // { Origin-Realm }
     // { Destination-Host }
+    reqSet.addAvp(Avp.DESTINATION_HOST, clientHost, true);
     // { Destination-Realm }
     // { User-Name }
     reqSet.addAvp(Avp.USER_NAME, "ala", false);
