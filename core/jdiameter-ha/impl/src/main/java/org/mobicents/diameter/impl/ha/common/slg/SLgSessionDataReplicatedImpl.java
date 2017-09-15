@@ -70,7 +70,7 @@ public abstract class SLgSessionDataReplicatedImpl extends AppSessionDataReplica
    */
   public void setSLgSessionState(SLgSessionState state) {
     if (exists()) {
-      getNode().put(STATE, state);
+      putNodeValue(STATE, state);
     } else {
       throw new IllegalStateException();
     }
@@ -83,7 +83,7 @@ public abstract class SLgSessionDataReplicatedImpl extends AppSessionDataReplica
    */
   public SLgSessionState getSLgSessionState() {
     if (exists()) {
-      return (SLgSessionState) getNode().get(STATE);
+      return (SLgSessionState) getNodeValue(STATE);
     }
     else {
       throw new IllegalStateException();
@@ -97,7 +97,7 @@ public abstract class SLgSessionDataReplicatedImpl extends AppSessionDataReplica
    */
   public Serializable getTsTimerId() {
     if (exists()) {
-      return (Serializable) getNode().get(TS_TIMERID);
+      return (Serializable) getNodeValue(TS_TIMERID);
     }
     else {
       throw new IllegalStateException();
@@ -111,7 +111,7 @@ public abstract class SLgSessionDataReplicatedImpl extends AppSessionDataReplica
    */
   public void setTsTimerId(Serializable tid) {
     if (exists()) {
-      getNode().put(TS_TIMERID, tid);
+      putNodeValue(TS_TIMERID, tid);
     }
     else {
       throw new IllegalStateException();
@@ -119,7 +119,7 @@ public abstract class SLgSessionDataReplicatedImpl extends AppSessionDataReplica
   }
 
   public Request getBuffer() {
-    byte[] data = (byte[]) getNode().get(BUFFER);
+    byte[] data = (byte[]) getNodeValue(BUFFER);
     if (data != null) {
       try {
         return (Request) this.messageParser.createMessage(ByteBuffer.wrap(data));
@@ -136,14 +136,14 @@ public abstract class SLgSessionDataReplicatedImpl extends AppSessionDataReplica
     if (buffer != null) {
       try {
         byte[] data = this.messageParser.encodeMessage((IMessage) buffer).array();
-        getNode().put(BUFFER, data);
+        putNodeValue(BUFFER, data);
       }
       catch (ParseException e) {
         logger.error("Unable to encode message to buffer.");
       }
     }
     else {
-      getNode().remove(BUFFER);
+      removeNodeValue(BUFFER);
     }
   }
 

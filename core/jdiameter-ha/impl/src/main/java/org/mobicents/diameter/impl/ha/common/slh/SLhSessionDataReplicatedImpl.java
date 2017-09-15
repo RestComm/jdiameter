@@ -70,7 +70,7 @@ public abstract class SLhSessionDataReplicatedImpl extends AppSessionDataReplica
   */
   public void setSLhSessionState(SLhSessionState state) {
     if (exists()) {
-      getNode().put(STATE, state);
+      putNodeValue(STATE, state);
     } else {
       throw new IllegalStateException();
     }
@@ -83,7 +83,7 @@ public abstract class SLhSessionDataReplicatedImpl extends AppSessionDataReplica
    */
   public SLhSessionState getSLhSessionState() {
     if (exists()) {
-      return (SLhSessionState) getNode().get(STATE);
+      return (SLhSessionState) getNodeValue(STATE);
     } else {
       throw new IllegalStateException();
     }
@@ -96,7 +96,7 @@ public abstract class SLhSessionDataReplicatedImpl extends AppSessionDataReplica
   */
   public Serializable getTsTimerId() {
     if (exists()) {
-      return (Serializable) getNode().get(TS_TIMERID);
+      return (Serializable) getNodeValue(TS_TIMERID);
     } else {
       throw new IllegalStateException();
     }
@@ -109,14 +109,14 @@ public abstract class SLhSessionDataReplicatedImpl extends AppSessionDataReplica
    */
   public void setTsTimerId(Serializable tid) {
     if (exists()) {
-      getNode().put(TS_TIMERID, tid);
+      putNodeValue(TS_TIMERID, tid);
     } else {
       throw new IllegalStateException();
     }
   }
 
   public Request getBuffer() {
-    byte[] data = (byte[]) getNode().get(BUFFER);
+    byte[] data = (byte[]) getNodeValue(BUFFER);
     if (data != null) {
       try {
         return (Request) this.messageParser.createMessage(ByteBuffer.wrap(data));
@@ -133,13 +133,13 @@ public abstract class SLhSessionDataReplicatedImpl extends AppSessionDataReplica
     if (buffer != null) {
       try {
         byte[] data = this.messageParser.encodeMessage((IMessage) buffer).array();
-        getNode().put(BUFFER, data);
+        putNodeValue(BUFFER, data);
       }
       catch (ParseException e) {
         logger.error("Unable to encode message to buffer.");
       }
     } else {
-      getNode().remove(BUFFER);
+      removeNodeValue(BUFFER);
     }
   }
 
