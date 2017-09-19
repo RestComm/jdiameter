@@ -413,8 +413,6 @@ public class PeerImpl extends org.jdiameter.client.impl.controller.PeerImpl impl
                 return true;
               }
 
-              message.setPeer(PeerImpl.this);
-
               switch (action) {
                 case LOCAL: // always call listener - this covers realms
                   // configured as localy processed and

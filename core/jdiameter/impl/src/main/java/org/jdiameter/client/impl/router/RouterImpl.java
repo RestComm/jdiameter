@@ -411,37 +411,23 @@ public class RouterImpl implements IRouter {
       //answer, search
       info = getRequestRouteInfoAndCopyProxyAvps(message, true);
 
-      // check for route-record AVPs
-      AvpSet rrAvps = message.getAvps().getAvps(Avp.ROUTE_RECORD);
-      if (rrAvps.size() > 0) {
-        // we want to send it back to the last
-        Avp destHostAvp = rrAvps.getAvpByIndex(rrAvps.size()-1);
-        logger.debug("Got Route-Record AVP to route the answer with HbH [{}] to: [{}]", message.getHopByHopIdentifier(), destHostAvp.getDiameterIdentity());
-
-        String matchedRealmName = this.realmTable.getRealmForPeer(destHostAvp.getDiameterIdentity());
-        logger.debug("Got a Realm for the answer with HbH [{}] routing via Route-Record: [{}]", message.getHopByHopIdentifier(), matchedRealmName);
-
-        matchedRealm = (IRealm) this.realmTable.matchRealm((IAnswer) message, matchedRealmName);
+      if (info != null) {
+        destHost = info[0];
+        destRealm = info[1];
+        logger.debug("Message is an answer. Host is [{}] and Realm is [{}] as per hopbyhop info from request", destHost, destRealm);
+        if (destRealm == null) {
+          logger.warn("Destination-Realm was null for hopbyhop id " + message.getHopByHopIdentifier());
+        }
       }
       else {
-        if (info != null) {
-          destHost = info[0];
-          destRealm = info[1];
-          logger.debug("Message is an answer. Host is [{}] and Realm is [{}] as per hopbyhop info from request", destHost, destRealm);
-          if (destRealm == null) {
-            logger.warn("Destination-Realm was null for hopbyhop id " + message.getHopByHopIdentifier());
-          }
-        }
-        else {
-          logger.debug("No Host and realm found based on hopbyhop id of the answer associated request");
-        }
-        //FIXME: if no info, should not send it ?
-        //FIXME: add strict deff in route back table so stack does not have to lookup?
-        if (logger.isDebugEnabled()) {
-          logger.debug("Looking up peer for answer: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message, destHost, destRealm});
-        }
-        matchedRealm = (IRealm) this.realmTable.matchRealm((IAnswer) message, destRealm);
+        logger.debug("No Host and realm found based on hopbyhop id of the answer associated request");
       }
+      //FIXME: if no info, should not send it ?
+      //FIXME: add strict deff in route back table so stack does not have to lookup?
+      if (logger.isDebugEnabled()) {
+        logger.debug("Looking up peer for answer: [{}], DestHost=[{}], DestRealm=[{}]", new Object[] {message, destHost, destRealm});
+      }
+      matchedRealm = (IRealm) this.realmTable.matchRealm((IAnswer) message, destRealm);
     }
 
     //  IPeer peer = getPeerPredProcessing(message, destRealm, destHost);
