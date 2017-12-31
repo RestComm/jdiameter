@@ -296,6 +296,7 @@ public class RxSessionFactoryImpl implements IRxSessionFactory, ClientRxSessionL
           }
         }
         IClientRxSessionData sessionData =  (IClientRxSessionData) this.sessionDataFactory.getAppSessionData(ClientRxSession.class, sessionId);
+        sessionData.setApplicationId(applicationId);
         ClientRxSessionImpl clientSession = new ClientRxSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getClientSessionListener(),
             this.getClientContextListener(), this.getStateListener());
         // this goes first!
@@ -314,6 +315,7 @@ public class RxSessionFactoryImpl implements IRxSessionFactory, ClientRxSessionL
           }
         }
         IServerRxSessionData sessionData =  (IServerRxSessionData) this.sessionDataFactory.getAppSessionData(ServerRxSession.class, sessionId);
+        sessionData.setApplicationId(applicationId);
         ServerRxSessionImpl serverSession = new ServerRxSessionImpl(sessionData, this.getMessageFactory(), sessionFactory, this.getServerSessionListener(),
             this.getServerContextListener(), this.getStateListener());
         iss.addSession(serverSession);
