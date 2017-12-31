@@ -236,6 +236,7 @@ public class S6aSessionFactoryImpl implements IS6aSessionFactory, ServerS6aSessi
         }
       }
       IServerS6aSessionData sessionData = (IServerS6aSessionData) this.sessionDataFactory.getAppSessionData(ServerS6aSession.class, sessionId);
+      sessionData.setApplicationId(applicationId);
       S6aServerSessionImpl serverSession = new S6aServerSessionImpl(sessionData, getMessageFactory(), sessionFactory, this.getServerSessionListener());
 
       iss.addSession(serverSession);
@@ -253,6 +254,7 @@ public class S6aSessionFactoryImpl implements IS6aSessionFactory, ServerS6aSessi
         }
       }
       IClientS6aSessionData sessionData = (IClientS6aSessionData) this.sessionDataFactory.getAppSessionData(ClientS6aSession.class, sessionId);
+      sessionData.setApplicationId(applicationId);
       S6aClientSessionImpl clientSession = new S6aClientSessionImpl(sessionData, getMessageFactory(), sessionFactory, this.getClientSessionListener());
 
       iss.addSession(clientSession);
