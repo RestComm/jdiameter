@@ -82,7 +82,7 @@ public class DictionaryImpl implements Dictionary {
 
   private static transient Logger logger = LoggerFactory.getLogger(DictionaryImpl.class);
 
-  public static DictionaryImpl INSTANCE = getInstance("dictionary.xml");
+  public static Dictionary INSTANCE = getInstance("dictionary.xml");
 
   private static final String UNDEFINED_AVP_TYPE = "UNDEFINED";
 
@@ -110,7 +110,7 @@ public class DictionaryImpl implements Dictionary {
     init(is);
   }
 
-  public static DictionaryImpl getInstance(InputStream is) {
+  public static Dictionary getInstance(InputStream is) {
     if (is == null) {
       if (INSTANCE != null) {
         return INSTANCE;
@@ -119,11 +119,16 @@ public class DictionaryImpl implements Dictionary {
       String confFile = "dictionary.xml";
       is = getInputStream(confFile);
     }
-    INSTANCE = new DictionaryImpl(is);
+    if (INSTANCE != null) {
+      ((DictionaryImpl) INSTANCE).init(is);
+    }
+    else {
+      INSTANCE = new DictionaryImpl(is);
+    }
     return INSTANCE;
   }
 
-  public static DictionaryImpl getInstance(String confFile) {
+  public static Dictionary getInstance(String confFile) {
     if (confFile == null) {
       if (INSTANCE != null) {
         return INSTANCE;
@@ -131,8 +136,7 @@ public class DictionaryImpl implements Dictionary {
       confFile = "dictionary.xml";
     }
     InputStream is = getInputStream(confFile);
-    INSTANCE = new DictionaryImpl(is);
-    return INSTANCE;
+    return getInstance((InputStream) is);
   }
 
   private static InputStream getInputStream(String confFile) {
