@@ -8057,15 +8057,7 @@
   </avpdefn>
 
   <avpdefn name="LCS-Supported-GAD-Shapes" code="2510" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
-    <type type-name="Enumerated">
-      <enum code="0" name="ellipsoidPoint" />
-      <enum code="1" name="ellipsoidPointWithUncertaintyCircle" />
-      <enum code="2" name="ellipsoidPointWithUncertaintyEllipse" />
-      <enum code="3" name="polygon" />
-      <enum code="4" name="ellipsoidPointWithAltitude" />
-      <enum code="5" name="ellipsoidPointWithAltitudeAndUncertaintyElipsoid" />
-      <enum code="6" name="ellipsoidArc" />
-    </type>
+    <type type-name="Unsigned32" />
   </avpdefn>
 
   <avpdefn name="LCS-Codeword" code="2511" vendor-id="TGPP" mandatory="must" protected="mustnot" may-encrypt="no" vendor-bit="must" >
