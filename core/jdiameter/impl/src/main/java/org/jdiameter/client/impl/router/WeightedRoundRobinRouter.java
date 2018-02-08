@@ -27,6 +27,8 @@ import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 
+import org.jdiameter.server.api.IRouter;
+
 import java.util.List;
 
 /**
@@ -35,7 +37,7 @@ import java.util.List;
  * @see <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
  * @author <a href="mailto:n.sowen@2scale.net">Nils Sowen</a>
  */
-public class WeightedRoundRobinRouter extends RouterImpl {
+public class WeightedRoundRobinRouter extends RouterImpl implements IRouter{
 
   private int lastSelectedPeer = -1;
   private int currentWeight = 0;

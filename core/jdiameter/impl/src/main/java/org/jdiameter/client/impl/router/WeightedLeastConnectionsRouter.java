@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
+import org.jdiameter.server.api.IRouter;
 
 /**
  * Weighted Least-Connections router implementation<br/><br/>
@@ -54,7 +55,7 @@ import java.util.List;
  * @see <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Least-Connection_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Least-Connection_Scheduling</a>
  * @author <a href="mailto:n.sowen@2scale.net">Nils Sowen</a>
  */
-public class WeightedLeastConnectionsRouter extends RouterImpl {
+public class WeightedLeastConnectionsRouter extends RouterImpl implements IRouter{
 
   private static final Logger logger = LoggerFactory.getLogger(WeightedLeastConnectionsRouter.class);
 
