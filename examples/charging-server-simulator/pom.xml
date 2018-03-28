@@ -168,6 +168,39 @@
           <generateProjectsForModules>false</generateProjectsForModules>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.24.0</version>
+        <configuration>
+           <images>
+              <image>
+                <name>charging-server-simulator</name>
+                <build>
+                  <from>openjdk:8-jre-slim</from>
+                  <assembly>
+                    <descriptorRef>artifact</descriptorRef>
+                  </assembly>
+                  <cmd>
+                    <shell>java -cp "/maven/*" org.mobicents.servers.diameter.charging.ChargingServerSimulator</shell>
+                  </cmd>
+                  <ports>
+                     <port>3868</port>
+                   </ports>
+                </build>
+              </image>
+           </images>
+        </configuration>
+        <executions>
+          <execution>
+            <id>docker-build</id>
+            <goals>
+               <goal>build</goal>
+            </goals>
+            <phase>install</phase>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
