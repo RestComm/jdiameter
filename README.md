@@ -1,7 +1,8 @@
 
-
 [Try Restcomm Cloud NOW for FREE!](https://www.restcomm.com/sign-up/) Zero download and install required.
 
+
+All Restcomm [docs](https://www.restcomm.com/docs/) and [downloads](https://www.restcomm.com/downloads/) are now available at [Restcomm.com](https://www.restcomm.com).
 
 
 
@@ -25,24 +26,3 @@ RestComm Diameter features several advanced features such as High-Availability a
 ## Integration
 
 RestComm Diameter also includes integration interfaces for [SIP Servlets](https://github.com/RestComm/sip-servlets) and [JAIN SLEE Resource Adaptors](https://github.com/RestComm/jain-slee.diameter).
-
-## License
-
-RestComm jDiameter is licensed under dual license policy. The default license is the Free Open Source [GNU Affero GPL v3.0](http://www.gnu.org/licenses/agpl-3.0.html). Alternatively a commercial license can be obtained from Telestax ([contact form](https://www.restcomm.com/contact/))
-
-RestComm jDiameter is lead by [TeleStax, Inc.](http://www.telestax.com/) and developed collaboratively by [a community of individual and enterprise contributors](https://www.restcomm.com/acknowledgements/).
-
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2FRestComm%2Fjdiameter.svg?type=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2FRestComm%2Fjdiameter?ref=badge_large)
-
-## All Open Source RestComm Projects
-
-Open Source  https://restcomm.com/open-source/
-
-
-## Acknowledgements
-
-* [![JProfiler](https://www.ej-technologies.com/images/product_banners/jprofiler_large.png)](https://www.ej-technologies.com/products/jprofiler/overview.html) JProfiler Open Source License
-
----
-We also maintain a list of [all Restcomm contributors](http://www.telestax.com/opensource/acknowledgments/) on the Restcomm website, to acknowledge contributions by the broad open source community.
