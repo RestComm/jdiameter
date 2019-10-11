@@ -15,7 +15,7 @@ The Diameter Stack currently supports the following application sessions:
 * Rf
 * Cx/Dx
 * Gx
-* Gq'
+* Gq
 * Rx
 
 :leveloffset: +1

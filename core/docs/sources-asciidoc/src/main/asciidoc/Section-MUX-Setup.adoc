@@ -55,11 +55,25 @@ Use Maven to build the deployable unit binary.
 						[usr]$ mvn install
 ----
 +
+If one expects the final build to include configuration file with both of extra features enabled, i.e.
+failover and session persistence mentioned in <<_jdiameter_failover_configuration>> and
+<<_jdiameter_session_persistence_configuration>> chapters accordingly, the same [app]`maven` command 
+ought to be run but with the profile switch included: `-Pfailover-config-enabled`. Below are three examples
+for different versions of JBoss each:
++
+[source]
+----
+
+[usr]$ mvn -Pjboss4,failover-config-enabled install
+[usr]$ mvn -Pjboss5,failover-config-enabled install
+[usr]$ mvn -Pjboss7,failover-config-enabled install
+----
++
 Once the process finishes you should have the SAR built.
 If the [var]`JBOSS_HOME` environment variable is set, the  will be deployed in the container after execution.
 
 
-NOTE: By default {this-platform} Diameter MUX; deploys in the {jee-platform} v5.x .
+NOTE: By default {this-platform} Diameter MUX deploys in the {jee-platform} v5.x .
 To change it, run [app]`maven` with the profile switch command: [parameter]`-Pjboss4`.
 
 [[_mux_trunk_source_building]]
