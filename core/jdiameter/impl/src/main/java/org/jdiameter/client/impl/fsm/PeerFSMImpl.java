@@ -274,8 +274,7 @@ public class PeerFSMImpl implements IStateMachine {
       //PCB added FSM multithread
       for (int i = 1; i <= FSM_THREAD_COUNT; i++) {
         logger.debug("Starting FSM Thread {} of {}", i, FSM_THREAD_COUNT);
-        Thread executor = concurrentFactory.getThread("FSM-" + context.getPeerDescription() + "_" + i, fsmQueueProcessor);
-        executor.start();
+        concurrentFactory.getThreadPool().execute(fsmQueueProcessor);
       }
     }
     finally {

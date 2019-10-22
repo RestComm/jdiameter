@@ -119,15 +119,10 @@ public class NetworkGuard implements INetworkGuard {
     try {
       for (int addrIdx = 0; addrIdx < inetAddress.length; addrIdx++) {
         GuardTask guardTask = new GuardTask(new InetSocketAddress(inetAddress[addrIdx], port));
-        Thread t = this.concurrentFactory.getThread(guardTask);
-        guardTask.thread = t;
+        this.concurrentFactory.getThreadPool().execute(guardTask);
         tasks.add(guardTask);
       }
       isWork = true;
-      for (GuardTask gt : this.tasks) {
-        gt.start();
-      }
-      //thread.start();
     }
     catch (Exception exc) {
       destroy();

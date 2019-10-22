@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.jdiameter.api.Configuration;
 import org.jdiameter.client.impl.helpers.Parameters;
@@ -82,7 +83,7 @@ public class ConcurrentFactory implements IConcurrentFactory {
         dgConfig.getStringValue(Parameters.ConcurrentEntityDescription.ordinal(), (String) Parameters.ConcurrentEntityDescription.defValue()) :
           (String) Parameters.ConcurrentEntityDescription.defValue();
 
-    threadFactory = (BaseThreadFactory) entityFactory.newThreadFactory(defThreadGroupName);
+    threadFactory = (BaseThreadFactory) entityFactory.newThreadFactory();
 
     scheduledExecutorServices = new ConcurrentHashMap<String, CommonScheduledExecutorService>();
     IStatisticRecord threadCount = statisticFactory.newCounterRecord(
@@ -95,7 +96,7 @@ public class ConcurrentFactory implements IConcurrentFactory {
 
           @Override
           public int getValueAsInt() {
-            return getThreadGroup().activeCount();
+            return ((ThreadPoolExecutor) getThreadPool()).getActiveCount();
           }
         });
 
@@ -133,25 +134,8 @@ public class ConcurrentFactory implements IConcurrentFactory {
   }
 
   @Override
-  public Thread getThread(Runnable runnable) {
-    return threadFactory.newThread(runnable);
-  }
-
-  @Override
-  public Thread getThread(String namePrefix, Runnable runnuble) {
-    return threadFactory.newThread(namePrefix, runnuble);
-  }
-
-  @Override
-  public List<Thread> getThreads() {
-    Thread[] threads = new Thread[threadFactory.getThreadGroup().activeCount()];
-    threadFactory.getThreadGroup().enumerate(threads);
-    return Arrays.asList(threads);
-  }
-
-  @Override
-  public ThreadGroup getThreadGroup() {
-    return threadFactory.getThreadGroup();
+  public ExecutorService getThreadPool() {
+    return threadFactory.getThreadPool();
   }
 
   @Override
@@ -162,6 +146,7 @@ public class ConcurrentFactory implements IConcurrentFactory {
       synchronized (ConcurrentFactory.class) {
         if (!scheduledExecutorServices.containsKey(name)) {
           service = new CommonScheduledExecutorService(name, getConfigByName(name), this.entityFactory, statisticFactory);
+
           scheduledExecutorServices.put(name, service);
         }
       }

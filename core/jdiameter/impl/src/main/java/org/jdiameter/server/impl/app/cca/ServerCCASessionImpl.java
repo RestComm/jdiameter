@@ -535,6 +535,7 @@ public class ServerCCASessionImpl extends AppCCASessionImpl implements ServerCCA
     public void run() {
       try {
         switch (request.getCommandCode()) {
+        
           case JCreditControlAnswer.code:
             handleEvent(new Event(true, factory.createCreditControlRequest(request), null));
             break;

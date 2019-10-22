@@ -42,7 +42,14 @@
 
 package org.jdiameter.common.impl.concurrent;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -52,29 +59,22 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 class BaseThreadFactory implements ThreadFactory {
 
-  public static final String ENTITY_NAME = "ThreadGroup";
+  public static final String ENTITY_NAME = "ThreadPool";
 
-  private ThreadGroup threadGroup;
-  private String threadPoolName;
-  private AtomicInteger count = new AtomicInteger(0);
+  private ExecutorService threadPoolExecutor;
 
-  BaseThreadFactory(String threadPoolName) {
-    this.threadPoolName = threadPoolName;
+  BaseThreadFactory() {
+    this.threadPoolExecutor = Executors.newCachedThreadPool();
+  }
 
-    this.threadGroup = new ThreadGroup("jd " + threadPoolName + " group");
+  public ExecutorService getThreadPool() {
+    return this.threadPoolExecutor;
   }
 
   @Override
   public Thread newThread(Runnable runnable) {
-    return new Thread(threadGroup, runnable, threadPoolName + "-" + count.getAndIncrement());
+    return null;
   }
 
-  public Thread newThread(String namePrefix, Runnable runnable) {
-    return new Thread(threadGroup, runnable, namePrefix + "-" + count.getAndIncrement());
-  }
-
-  public ThreadGroup getThreadGroup() {
-    return threadGroup;
-  }
 
 }

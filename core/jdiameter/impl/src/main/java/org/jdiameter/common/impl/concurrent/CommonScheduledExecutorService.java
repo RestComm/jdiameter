@@ -98,13 +98,7 @@ class CommonScheduledExecutorService extends ScheduledThreadPoolExecutor {
 
     statistic.appendCounter(statisticFactory.newCounterRecord(WorkingThread), statisticFactory.newCounterRecord(CanceledTasks),
         statisticFactory.newCounterRecord(BrokenTasks), execTimeCounter, waitTimeCounter, statisticFactory.newCounterRecord(WaitTimeTask));
-
-    if (config == null) {
-      this.setThreadFactory(entityFactory.newThreadFactory(name));
-    } else {
-      this.setThreadFactory(entityFactory.newThreadFactory(config.getStringValue(Parameters.ConcurrentEntityDescription.ordinal(), name)));
-    }
-
+    
     super.setRejectedExecutionHandler(entityFactory.newRejectedExecutionHandler(rejectedCount));
   }
 

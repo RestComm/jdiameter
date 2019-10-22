@@ -196,12 +196,7 @@ public class TLSTransportClient {
       throw new NotInitializedException("No parent connection is set is set");
     }
     if (this.readThread == null || !this.readThread.isAlive()) {
-      this.readThread = this.concurrentFactory.getThread("TLSReader", this.readTash);
-    }
-
-    if (!this.readThread.isAlive()) {
-      this.readThread.setDaemon(true);
-      this.readThread.start();
+      this.concurrentFactory.getThreadPool().execute(this.readTash);
     }
   }
 

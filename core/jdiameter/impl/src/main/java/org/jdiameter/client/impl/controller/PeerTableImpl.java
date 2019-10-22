@@ -55,8 +55,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.jdiameter.api.Avp;
 import org.jdiameter.api.AvpDataException;
@@ -340,12 +343,12 @@ public class PeerTableImpl implements IPeerTable {
         // boolean interrupted = false;
         long remWaitTime = 2000;
         logger.debug("Stopping thread group and waiting a max of {}ms for all threads to finish", remWaitTime);
-        while (concurrentFactory.getThreadGroup().activeCount() > 0 && remWaitTime > 0) {
+        while (((ThreadPoolExecutor) concurrentFactory.getThreadPool()).getActiveCount() > 0 && remWaitTime > 0) {
           long waitTime = 250;
           Thread.sleep(waitTime);
           remWaitTime -= waitTime;
           logger.debug("Waited {}ms. Time remaining to wait: {}ms. {} Thread still active.",
-              new Object[]{waitTime, remWaitTime, concurrentFactory.getThreadGroup().activeCount()});
+              new Object[]{waitTime, remWaitTime, ((ThreadPoolExecutor) concurrentFactory.getThreadPool()).getActiveCount()});
           // it did not terminated, let's interrupt
           // FIXME: remove ASAP, this is very bad, it kills threads in middle of op,
           //        killing FSM of peer for instance, after that its not usable.
@@ -390,7 +393,7 @@ public class PeerTableImpl implements IPeerTable {
       catch (IllegalThreadStateException itse) {
         if (logger.isDebugEnabled()) {
           logger.debug("Failure trying to destroy ThreadGroup probably due to existing active threads. Use stop() before destroy(). (nr_threads={})",
-              concurrentFactory.getThreadGroup().activeCount());
+              ((ThreadPoolExecutor) concurrentFactory.getThreadPool()).getActiveCount());
         }
       }
       catch (ThreadDeath td) {
@@ -419,26 +422,15 @@ public class PeerTableImpl implements IPeerTable {
     return null;
   }
 
-  protected class PeerTableThreadFactory implements ThreadFactory {
+  protected class PeerTableThreadFactory  {
 
     public final AtomicLong sequence = new AtomicLong(0);
     private int priority = Thread.NORM_PRIORITY;
-    private ThreadGroup factoryThreadGroup = new ThreadGroup("JDiameterThreadGroup[" + sequence.incrementAndGet() + "]");
-
+    private ExecutorService threadPoolExecutor = Executors.newCachedThreadPool();
+    
     public PeerTableThreadFactory(int priority) {
       super();
       this.priority = priority;
-    }
-
-    @Override
-    public Thread newThread(Runnable r) {
-      Thread t = new Thread(this.factoryThreadGroup, r);
-      if (logger.isDebugEnabled()) {
-        logger.debug("Creating new thread in thread group JDiameterThreadGroup. Thread name is [{}]", t.getName());
-      }
-      t.setPriority(this.priority);
-      // TODO ? t.start();
-      return t;
     }
   }
 }
