@@ -297,9 +297,11 @@ public class ElementParser implements IElementParser {
       // skip remaining.
       // TODO: Do we need to padd everything? Or on send stack should properly fill byte[] ... ?
       if (length % 4 != 0) {
-        for (int i; length % 4 != 0; length += i) {
-          i = (int) in.skip((4 - length % 4));
+        int paddingBytes = 4 - length % 4;
+        if ((int) in.skip(paddingBytes) < paddingBytes) {
+          throw new AvpDataException("Not enough data in buffer (padding bytes)!");
         }
+        length += paddingBytes;
       }
       AvpImpl avp = new AvpImpl(code, (short) flags, (int) vendor, rawData);
       avps.addAvp(avp);
