@@ -507,7 +507,7 @@ public class RouterImpl implements IRouter {
       }
 
       // Balancing
-      IPeer peer = selectPeer(availablePeers);
+      IPeer peer = selectPeer(message, availablePeers);
       if (peer == null) {
         throw new RouteException("Unable to find valid connection to peer[" + destHost + "] in realm[" + destRealm + "]");
       }
@@ -626,6 +626,21 @@ public class RouterImpl implements IRouter {
         }
       }
       //now send
+      table.sendMessage((IMessage) request);
+    }
+    catch (AvpDataException exc) {
+      throw new InternalException(exc);
+    }
+    catch (IllegalDiameterStateException e) {
+      throw new InternalException(e);
+    }
+    catch (IOException e) {
+      throw new InternalException(e);
+    }
+  }
+
+  public void processSecondAttempt(IRequest request, IPeerTable table) throws InternalException, RouteException {
+    try {
       table.sendMessage((IMessage) request);
     }
     catch (AvpDataException exc) {
@@ -787,7 +802,7 @@ public class RouterImpl implements IRouter {
     requestEntryMap = null;
   }
 
-  protected IPeer selectPeer(List<IPeer> availablePeers) {
+  protected IPeer selectPeer(IMessage message, List<IPeer> availablePeers) {
     IPeer p = null;
     for (IPeer c : availablePeers) {
       if (p == null || c.getRating() >= p.getRating()) {

@@ -19,28 +19,42 @@
 
 package org.jdiameter.client.impl.router;
 
+import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.MetaData;
 import org.jdiameter.api.PeerState;
 import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
-
 import org.jdiameter.server.api.IRouter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.jdiameter.api.Avp.CC_REQUEST_NUMBER;
 
 /**
  * Weighted round-robin router implementation
  *
- * @see <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
  * @author <a href="mailto:n.sowen@2scale.net">Nils Sowen</a>
+ * @see
+ * <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
  */
-public class WeightedRoundRobinRouter extends RouterImpl implements IRouter{
+public class WeightedRoundRobinRouter extends RouterImpl implements IRouter {
+
+  private static final Logger logger = LoggerFactory.getLogger(WeightedRoundRobinRouter.class);
 
   private int lastSelectedPeer = -1;
   private int currentWeight = 0;
+  private ConcurrentHashMap<String, HashSet<IPeer>> messageToPeer = new ConcurrentHashMap<String, HashSet<IPeer>>();
+  private int timeout = 30000;
 
   protected WeightedRoundRobinRouter(IRealmTable table, Configuration config) {
     super(null, null, table, config, null);
@@ -108,24 +122,44 @@ public class WeightedRoundRobinRouter extends RouterImpl implements IRouter{
    * <p>
    * This method is internally synchronized due to concurrent modifications to lastSelectedPeer and currentWeight.
    * Please consider this when relying on heavy throughput.
-   *
+   * <p>
    * Please note: if the list of availablePeers changes between calls (e.g. if a peer becomes active or inactive),
    * the balancing algorithm is disturbed and might be distributed uneven.
    * This is likely to happen if peers are flapping.
    *
    * @param availablePeers list of peers that are in {@link PeerState#OKAY OKAY} state
    * @return the selected peer according to algorithm
-   * @see <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
+   * @see
+   * <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
    */
   @Override
-  public IPeer selectPeer(List<IPeer> availablePeers) {
-
+  public IPeer selectPeer(IMessage message, List<IPeer> availablePeers) {
+    IPeer selectedPeer = null;
     int peerSize = availablePeers != null ? availablePeers.size() : 0;
 
+    logger.debug("peerSize " + peerSize);
     // Return none if empty, or first if only one member found
     if (peerSize <= 0) {
       return null;
     }
+
+    if (message.getPeer() != null) {
+      addRecordToMap(message, message.getPeer());
+    }
+
+    long request_number = 0;
+    try {
+      request_number = message.getAvps().getAvp(CC_REQUEST_NUMBER).getUnsigned32();
+      logger.debug("request_number later : " + request_number);
+    } catch (AvpDataException e) {
+      e.printStackTrace();
+    }
+
+    if (request_number == peerSize) {
+      logger.debug("No peers left for this message : " + message.getSessionId() + ", returning...");
+      return null;
+    }
+
     if (peerSize == 1) {
       return availablePeers.iterator().next();
     }
@@ -136,11 +170,17 @@ public class WeightedRoundRobinRouter extends RouterImpl implements IRouter{
     for (IPeer peer : availablePeers) {
       maxWeight = Math.max(maxWeight, peer.getRating());
       gcd = (gcd == null) ? peer.getRating() : gcd(gcd, peer.getRating());
+      logger.debug("peer.getRating() " + peer.getRating());
     }
+
+//    logger.debug("maxWeight " + maxWeight);
+//    logger.debug("gcd " + gcd);
+//    logger.debug("lastSelectedPeer " + lastSelectedPeer);
+//    logger.debug("currentWeight " + currentWeight);
 
     // Find best matching candidate. Synchronized here due to consistent changes on member variables
     synchronized (this) {
-      for ( ;; ) {
+      for (; ; ) {
         lastSelectedPeer = (lastSelectedPeer + 1) % peerSize;
         if (lastSelectedPeer == 0) {
           currentWeight = currentWeight - gcd;
@@ -154,10 +194,73 @@ public class WeightedRoundRobinRouter extends RouterImpl implements IRouter{
         }
         IPeer candidate = availablePeers.get(lastSelectedPeer);
         if (candidate.getRating() >= currentWeight) {
-          return availablePeers.get(lastSelectedPeer);
+          selectedPeer = availablePeers.get(lastSelectedPeer);
+          if (message.getPeer() != null) {
+            logger.debug("Moving selected peer to next peer as it looks like to be the 2nd attempt of this message and last peer of this message");
+            lastSelectedPeer = selectPeerForSecondAttempt(lastSelectedPeer, availablePeers, message);
+            if (lastSelectedPeer < 0) {
+              logger.debug("No unattempted peers left for this message : " + message.getSessionId() + ", returning...");
+              return null;
+            } else {
+              selectedPeer = availablePeers.get(lastSelectedPeer);
+            }
+          }
+          return selectedPeer;
         }
       }
     }
+  }
+
+  private int selectPeerForSecondAttempt(int selectedPeerIndex, List<IPeer> availablePeers, IMessage message) {
+
+    logger.debug("Checking peer history of message : " + message.getSessionId());
+
+    if (!messageToPeer.containsKey(message.getSessionId())) {
+      logger.debug("messageToPeer does not contain selected peer so return it");
+      return selectedPeerIndex;
+    }
+    for (int i = 0; i < availablePeers.size(); i++) {
+      IPeer candidate = availablePeers.get(selectedPeerIndex);
+      if (messageToPeer.get(message.getSessionId()).contains(candidate)) {
+        logger.debug("this peer has been tried before : " + candidate.getUri() + ", skipping to next peer");
+        selectedPeerIndex = selectedPeerIndex < availablePeers.size() - 1 ? selectedPeerIndex + 1 : 0;
+        continue;
+      } else {
+        logger.debug("This peer : " + candidate.getUri() + " hasn't been tried for this message : " + message.getSessionId());
+        return selectedPeerIndex;
+      }
+    }
+    logger.debug("All peers are tried, returning -1");
+    messageToPeer.remove(message.getSessionId());
+    return -1;
+  }
+
+  private synchronized void addRecordToMap(final IMessage message, IPeer peer) {
+    if (messageToPeer.containsKey(message.getSessionId())) {
+      messageToPeer.get(message.getSessionId()).add(peer);
+    } else {
+      HashSet<IPeer> peerSet = new HashSet<IPeer>();
+      peerSet.add(peer);
+      messageToPeer.put(message.getSessionId(), peerSet);
+
+      new Timer().schedule(new TimerTask() {
+        @Override
+        public void run() {
+          actionAfterTimeout(message.getSessionId());
+        }
+      }, timeout);
+    }
+  }
+
+  void actionAfterTimeout(String key) {
+    logger.debug("messageToPeer.size() before : " + messageToPeer.size());
+    HashSet<IPeer> peerSet = messageToPeer.remove(key);
+    if (peerSet != null) {
+      logger.debug("peerSet with size : " + peerSet.size() + " has been removed for message : " + key);
+    } else {
+      logger.debug("Nothing removed! : " + key);
+    }
+    logger.debug("messageToPeer.size() after : " + messageToPeer.size());
   }
 
   /**

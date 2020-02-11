@@ -480,6 +480,22 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     return answer;
   }
 
+  private boolean processSecondAttempt(IMessage request) {
+    try {
+      int request_number = request.getAvps().getAvp(Avp.CC_REQUEST_NUMBER).getInteger32();
+      logger.debug("increase the request number to : " + request_number+1);
+      request.getAvps().removeAvp(Avp.CC_REQUEST_NUMBER);
+      request.getAvps().addAvp(Avp.CC_REQUEST_NUMBER, request_number + 1);
+      router.processSecondAttempt(request, table);
+    }
+    catch (Throwable exc) {
+      // Incorrect redirect message
+      logger.debug("Failed to process second attempt!", exc);
+      return false;
+    }
+    return true;
+  }
+
   @Override
   public void connect() throws InternalException, IOException, IllegalDiameterStateException {
     if (getState(PeerState.class) != PeerState.DOWN) {
@@ -1037,7 +1053,23 @@ public class PeerImpl extends AbstractPeer implements IPeer {
 
           if (message != null) {
             if (request.getEventListener() != null) {
-              request.getEventListener().receivedSuccessMessage(request, message);
+              try {
+                if (avpResCode.getUnsigned32() == ResultCode.TOO_BUSY){
+                  logger.debug("RESPONSE IS AN 3004 SO TRYING AGAIN...");
+                  logger.debug("Message with this sessionId will be retried : " + message.getSessionId());
+                  if (!processSecondAttempt(request)){
+                    request.getEventListener().receivedSuccessMessage(request, message);
+                  }
+                } else {
+                  request.getEventListener().receivedSuccessMessage(request, message);
+                }
+              } catch (AvpDataException e) {
+                e.printStackTrace();
+                logger.error("Unable to get Result Code");
+                if (statistic.isEnabled()) {
+                  statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedResponse.name()).inc();
+                }
+              }
             }
             else {
               logger.debug("Unable to call answer listener for request {} because listener is not set", message);

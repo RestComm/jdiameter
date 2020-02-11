@@ -22,7 +22,9 @@ package org.jdiameter.client.impl.router;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.MetaData;
 import org.jdiameter.api.PeerState;
+import org.jdiameter.api.StatisticRecord;
 import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
@@ -124,7 +126,7 @@ public class WeightedLeastConnectionsRouter extends RouterImpl implements IRoute
    * @return the selected peer according to algorithm
    */
   @Override
-  public IPeer selectPeer(List<IPeer> availablePeers) {
+  public IPeer selectPeer(IMessage message, List<IPeer> availablePeers) {
     int peerSize = availablePeers != null ? availablePeers.size() : 0;
 
     // Return none if empty, or first if only one member found
@@ -171,6 +173,16 @@ public class WeightedLeastConnectionsRouter extends RouterImpl implements IRoute
         logger.debug("Statistics for peer are disabled. Please enable statistics in client config");
       }
       return 0;
+    }
+
+//    logger.debug("peer.getUri() : " + peer.getUri());
+//    logger.debug("AppGenRequestPerSecond : " + getRecord(IStatisticRecord.Counters.AppGenRequestPerSecond.name()+'.'+peer.getUri(), stats));
+//    logger.debug("NetGenRequestPerSecond : " + getRecord(IStatisticRecord.Counters.NetGenRequestPerSecond.name()+'.'+peer.getUri(), stats));
+//    logger.debug("AppGenRejectedResponse : " + getRecord(IStatisticRecord.Counters.AppGenRejectedResponse.name()+'.'+peer.getUri(), stats));
+//    logger.debug("NetGenRejectedResponse : " + getRecord(IStatisticRecord.Counters.NetGenRejectedResponse.name()+'.'+peer.getUri(), stats));
+
+    for (StatisticRecord rec : stats.getRecords()){
+      logger.debug(rec.getName() + " : " + rec.getValueAsLong());
     }
 
     // Requests per second initiated by Local Peer + Request initiated by Remote peer

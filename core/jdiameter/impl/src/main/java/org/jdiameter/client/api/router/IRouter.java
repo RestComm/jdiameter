@@ -121,6 +121,15 @@ public interface IRouter  {
    */
   void processRedirectAnswer(IRequest request, IAnswer answer, IPeerTable table) throws InternalException, RouteException;
 
+
+  /**
+   * Called when 3004 is received for request. This method update cc-request-number and sends the message back to stack.
+   * @param request
+   * @param table
+   */
+  void processSecondAttempt(IRequest request, IPeerTable table) throws InternalException, RouteException;
+
+
   /**
    * Based on Redirect entries or any other factors, this method changes route information.
    * @param message
@@ -128,6 +137,8 @@ public interface IRouter  {
    * @throws RouteException
    * @throws AvpDataException
    */
+
+
   boolean updateRoute(IRequest message) throws RouteException, AvpDataException;
 
 }
