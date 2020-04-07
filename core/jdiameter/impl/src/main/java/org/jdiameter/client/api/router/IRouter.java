@@ -123,11 +123,12 @@ public interface IRouter  {
 
 
   /**
-   * Called when 3004 is received for request. This method update cc-request-number and sends the message back to stack.
+   * Called when a 3002 or 3004 is received for a request. This method updates cc-request-number and attempts to resubmit the request
+   * to an alternative peer.
    * @param request
    * @param table
    */
-  void processSecondAttempt(IRequest request, IPeerTable table) throws InternalException, RouteException;
+  void processBusyOrUnableToDeliverAnswer(IRequest request, IPeerTable table) throws InternalException, RouteException;
 
 
   /**

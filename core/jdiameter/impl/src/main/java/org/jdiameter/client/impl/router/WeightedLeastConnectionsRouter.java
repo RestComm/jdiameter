@@ -19,10 +19,12 @@
 
 package org.jdiameter.client.impl.router;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.MetaData;
 import org.jdiameter.api.PeerState;
-import org.jdiameter.api.StatisticRecord;
 import org.jdiameter.client.api.IContainer;
 import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.controller.IPeer;
@@ -30,12 +32,9 @@ import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
+import org.jdiameter.server.api.IRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.List;
-import org.jdiameter.server.api.IRouter;
 
 /**
  * Weighted Least-Connections router implementation<br/><br/>
@@ -104,13 +103,13 @@ public class WeightedLeastConnectionsRouter extends RouterImpl implements IRoute
    * <pre>
    * {@code
    *   for (m = 0; m < n; m++) {
-   *   if (W(Sm) > 0) {
-   *     for (i = m+1; i < n; i++) {
-   *     if (C(Sm)*W(Si) > C(Si)*W(Sm))
-   *       m = i;
+   *     if (W(Sm) > 0) {
+   *       for (i = m+1; i < n; i++) {
+   *         if (C(Sm)*W(Si) > C(Si)*W(Sm))
+   *           m = i;
+   *       }
+   *       return Sm;
    *     }
-   *     return Sm;
-   *   }
    *   }
    *   return NULL;
    * }
@@ -124,6 +123,19 @@ public class WeightedLeastConnectionsRouter extends RouterImpl implements IRoute
    * @see <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Least-Connection_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Least-Connection_Scheduling</a>
    * @param availablePeers list of peers that are in {@link PeerState#OKAY OKAY} state
    * @return the selected peer according to algorithm
+   */
+  @Override
+  public IPeer selectPeer(List<IPeer> availablePeers) {
+    return selectPeer(null, availablePeers);
+  }
+
+  /**
+   * Return peer with least connections
+   *
+   * @param message the message to be sent
+   * @param availablePeers list of peers that are in {@link PeerState#OKAY OKAY} state
+   * @return the selected peer according to algorithm
+   *
    */
   @Override
   public IPeer selectPeer(IMessage message, List<IPeer> availablePeers) {
@@ -173,16 +185,6 @@ public class WeightedLeastConnectionsRouter extends RouterImpl implements IRoute
         logger.debug("Statistics for peer are disabled. Please enable statistics in client config");
       }
       return 0;
-    }
-
-//    logger.debug("peer.getUri() : " + peer.getUri());
-//    logger.debug("AppGenRequestPerSecond : " + getRecord(IStatisticRecord.Counters.AppGenRequestPerSecond.name()+'.'+peer.getUri(), stats));
-//    logger.debug("NetGenRequestPerSecond : " + getRecord(IStatisticRecord.Counters.NetGenRequestPerSecond.name()+'.'+peer.getUri(), stats));
-//    logger.debug("AppGenRejectedResponse : " + getRecord(IStatisticRecord.Counters.AppGenRejectedResponse.name()+'.'+peer.getUri(), stats));
-//    logger.debug("NetGenRejectedResponse : " + getRecord(IStatisticRecord.Counters.NetGenRejectedResponse.name()+'.'+peer.getUri(), stats));
-
-    for (StatisticRecord rec : stats.getRecords()){
-      logger.debug(rec.getName() + " : " + rec.getValueAsLong());
     }
 
     // Requests per second initiated by Local Peer + Request initiated by Remote peer

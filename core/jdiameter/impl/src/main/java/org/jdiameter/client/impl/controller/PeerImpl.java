@@ -383,6 +383,17 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
   }
 
+  private boolean isBusyOrUnableToDeliverAnswer(Avp avpResCode, IMessage answer) {
+    try {
+      // E-bit set indicating a protocol error, and Result Code one of 3002 or 3004
+      return (answer.getFlags() & 0x20) != 0 && avpResCode != null
+          && (avpResCode.getInteger32() == ResultCode.TOO_BUSY || avpResCode.getInteger32() == ResultCode.UNABLE_TO_DELIVER);
+    }
+    catch (AvpDataException e) {
+      return false;
+    }
+  }
+
   @Override
   public IStatistic getStatistic() {
     return statistic;
@@ -480,20 +491,28 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     return answer;
   }
 
-  private boolean processSecondAttempt(IMessage request) {
+  private IMessage processBusyOrUnableToDeliverAnswer(IMessage request, IMessage answer) {
     try {
-      int request_number = request.getAvps().getAvp(Avp.CC_REQUEST_NUMBER).getInteger32();
-      logger.debug("increase the request number to : " + request_number+1);
-      request.getAvps().removeAvp(Avp.CC_REQUEST_NUMBER);
-      request.getAvps().addAvp(Avp.CC_REQUEST_NUMBER, request_number + 1);
-      router.processSecondAttempt(request, table);
+      incrementRequestNumber(request);
+      router.processBusyOrUnableToDeliverAnswer(request, table);
+      return null;
     }
     catch (Throwable exc) {
-      // Incorrect redirect message
-      logger.debug("Failed to process second attempt!", exc);
-      return false;
+      // Any error when attempting a resubmit to an alternative peer simply results in the original
+      // Busy or Unable to Deliver Answer being returned
+      if (logger.isErrorEnabled()) {
+        logger.error("Failed to reprocess busy or unable to deliver response!", exc);
+      }
     }
-    return true;
+    return answer;
+  }
+
+  private void incrementRequestNumber(IMessage request) throws AvpDataException {
+    int requestNumber = request.getAvps().getAvp(Avp.CC_REQUEST_NUMBER).getInteger32();
+    requestNumber++;
+    logger.trace("Incremented requestNumber to [{}] ", requestNumber);
+    request.getAvps().removeAvp(Avp.CC_REQUEST_NUMBER);
+    request.getAvps().addAvp(Avp.CC_REQUEST_NUMBER, requestNumber);
   }
 
   @Override
@@ -1050,26 +1069,18 @@ public class PeerImpl extends AbstractPeer implements IPeer {
             //if return value is not null, there was some error, lets try to invoke listener if it exists...
             isProcessed = message == null;
           }
+          avpResCode = message.getAvps().getAvp(RESULT_CODE);
+          if (isBusyOrUnableToDeliverAnswer(avpResCode, message)) {
+            logger.debug("Message with [sessionId={}] received a Busy or Unable to Deliver Answer and will be resubmitted.", message.getSessionId());
+            message.setListener(request.getEventListener());
+            message = processBusyOrUnableToDeliverAnswer(request, message);
+            // if return value is not null, there was some error, lets try to invoke listener if it exists...
+            isProcessed = message == null;
+          }
 
           if (message != null) {
             if (request.getEventListener() != null) {
-              try {
-                if (avpResCode.getUnsigned32() == ResultCode.TOO_BUSY){
-                  logger.debug("RESPONSE IS AN 3004 SO TRYING AGAIN...");
-                  logger.debug("Message with this sessionId will be retried : " + message.getSessionId());
-                  if (!processSecondAttempt(request)){
-                    request.getEventListener().receivedSuccessMessage(request, message);
-                  }
-                } else {
-                  request.getEventListener().receivedSuccessMessage(request, message);
-                }
-              } catch (AvpDataException e) {
-                e.printStackTrace();
-                logger.error("Unable to get Result Code");
-                if (statistic.isEnabled()) {
-                  statistic.getRecordByName(IStatisticRecord.Counters.NetGenRejectedResponse.name()).inc();
-                }
-              }
+              request.getEventListener().receivedSuccessMessage(request, message);
             }
             else {
               logger.debug("Unable to call answer listener for request {} because listener is not set", message);

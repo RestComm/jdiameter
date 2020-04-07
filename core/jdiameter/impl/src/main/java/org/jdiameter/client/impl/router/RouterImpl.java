@@ -639,7 +639,7 @@ public class RouterImpl implements IRouter {
     }
   }
 
-  public void processSecondAttempt(IRequest request, IPeerTable table) throws InternalException, RouteException {
+  public void processBusyOrUnableToDeliverAnswer(IRequest request, IPeerTable table) throws InternalException, RouteException {
     try {
       table.sendMessage((IMessage) request);
     }
@@ -802,7 +802,7 @@ public class RouterImpl implements IRouter {
     requestEntryMap = null;
   }
 
-  protected IPeer selectPeer(IMessage message, List<IPeer> availablePeers) {
+  protected IPeer selectPeer(List<IPeer> availablePeers) {
     IPeer p = null;
     for (IPeer c : availablePeers) {
       if (p == null || c.getRating() >= p.getRating()) {
@@ -810,6 +810,10 @@ public class RouterImpl implements IRouter {
       }
     }
     return p;
+  }
+
+  protected IPeer selectPeer(IMessage message, List<IPeer> availablePeers) {
+    return selectPeer(availablePeers);
   }
 
   //    protected void redirectProcessing(IMessage message, final String destRealm, final String destHost) throws AvpDataException {
