@@ -30,7 +30,6 @@ import java.util.Set;
 
 import org.jdiameter.api.ApplicationId;
 import org.jdiameter.api.Avp;
-import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.IllegalDiameterStateException;
 import org.jdiameter.api.InternalException;
@@ -173,63 +172,257 @@ public class TestRouter extends TestCase {
 
     }
 
-    @Test
-    public void testWeightedRoundRobinResubmittingOnBusyOrUnableToDeliverAnswer() throws Exception {
+  /*
+   * WeightedRoundRobinResubmittingRouter should behave exactly as the WeightedRoundRobinRouter
+   * when no Busy or Unable to Deliver Answers are received and hence no re-submissions to alternative peers
+   * are required.
+   */
+  @Test
+  public void testWeightedRoundRobinResubmittingNoResubmissions() throws Exception {
+    logger.debug("*** Executing testWeightedRoundRobinResubmittingNoResubmissions ***");
 
-      Configuration config = new XMLConfiguration("src/test/resources/jdiameter-weightedroundrobinresubmitting-config.xml");
-      WeightedRoundRobinResubmittingRouter router = new WeightedRoundRobinResubmittingRouter(new RealmTableTest(), config);
+    Configuration config = new XMLConfiguration("src/test/resources/jdiameter-weightedroundrobinresubmitting-config.xml");
+    WeightedRoundRobinResubmittingRouter router = new WeightedRoundRobinResubmittingRouter(new RealmTableTest(), config);
 
-      IStatisticManager manager = new StatisticManagerImpl(config);
-      PeerTest p1 = new PeerTest(1, 1, true, manager);
-      PeerTest p2 = new PeerTest(2, 2, true, manager);
-      PeerTest p3 = new PeerTest(3, 3, true, manager);
-      PeerTest p4 = new PeerTest(4, 4, true, manager);
+    IStatisticManager manager = new StatisticManagerImpl(config);
+    PeerTest p1 = new PeerTest(1, 1, true, manager);
+    PeerTest p2 = new PeerTest(2, 1, true, manager);
+    PeerTest p3 = new PeerTest(3, 1, true, manager);
+    PeerTest p4 = new PeerTest(4, 1, true, manager);
 
-      List<IPeer> peers = new ArrayList<IPeer>(3);
-      peers.add(p1);
-      peers.add(p2);
-      peers.add(p3);
-      peers.add(p4);
+    List<IPeer> peers = new ArrayList<IPeer>(3);
+    peers.add(p1);
+    peers.add(p2);
+    peers.add(p3);
 
-      // Create any message
-      MessageParser messageParser = new MessageParser();
-      IMessage request = messageParser.createEmptyMessage(123, 3l);
-      request.getAvps().addAvp(Avp.CC_REQUEST_NUMBER, 0);
-      request.setRequest(true);
-      request.getAvps().addAvp(Avp.SESSION_ID, getSessionId(), true, false, false);
+    // Test simple round robin (all weight = 1)
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
 
-      // Test weighted round robin on a single, resubmitted request
-      assertEquals(p4.toString(), router.selectPeer(request, peers).toString());
-      emulateResubmission(p4, request);
-      assertEquals(p3.toString(), router.selectPeer(request, peers).toString());
-      emulateResubmission(p3, request);
-      assertEquals(p2.toString(), router.selectPeer(request, peers).toString());
-      emulateResubmission(p2, request);
-      assertEquals(p1.toString(), router.selectPeer(request, peers).toString());
-    }
+    // Test weighted round robin (p1=2, p2=1, p3=1)
+    p1.setRating(2);
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
 
-    private void emulateResubmission(PeerTest peer, IMessage request) throws AvpDataException {
-      request.setPeer(peer);
-      incrementRequestNumber(request);
-    }
+    // Test weighted round robin (p1=2, p2=2, p3=1)
+    p2.setRating(2);
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
 
-    private void incrementRequestNumber(IMessage request) throws AvpDataException {
-      int requestNumber = request.getAvps().getAvp(Avp.CC_REQUEST_NUMBER).getInteger32();
-      requestNumber++;
-      logger.trace("Incremented requestNumber to [{}] ", requestNumber);
-      request.getAvps().removeAvp(Avp.CC_REQUEST_NUMBER);
-      request.getAvps().addAvp(Avp.CC_REQUEST_NUMBER, requestNumber); 
-    }
+    // Test equally weighted round robin (p1=2, p2=2, p3=2)
+    p3.setRating(2);
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
 
-    private String getSessionId() {
-      long id = uid.nextLong();
-      long high32 = (id & 0xffffffff00000000L) >> 32;
-      long low32 = (id & 0xffffffffL);
-      StringBuilder sb = new StringBuilder();
-      sb.append("localhost").
-      append(";").append(high32).append(";").append(low32);
-      return sb.toString();  
-    }
+    // Add Peer-4 with weight 1 to list
+    peers.add(p4);
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    // expected glitch here: due to the sudden availibity of Peer-4, the algorithm is disturbed
+    assertEquals(p4.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    assertEquals(p4.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    assertEquals(p4.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+
+    // Next cycle would produce Peer-4, but reduce peer list now
+    peers = peers.subList(0, 2); // now: Peer-1, Peer-2
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+
+    logger.debug("*** Execution of testWeightedRoundRobinResubmittingNoResubmissions completed ***");
+  }
+
+  /*
+   * Validates that, when a peer responds with a Busy or Unable to Deliver Answer, an alternative peer is
+   * selected to resubmit the Request to, based on the existing Round Robin weighting algorithm.
+   */
+  @Test
+  public void testWeightedRoundRobinResubmittingOnBusyOrUnableToDeliverAnswer() throws Exception {
+    logger.debug("*** Executing testWeightedRoundRobinResubmittingOnBusyOrUnableToDeliverAnswer ***");
+
+    Configuration config = new XMLConfiguration("src/test/resources/jdiameter-weightedroundrobinresubmitting-config.xml");
+    WeightedRoundRobinResubmittingRouter router = new WeightedRoundRobinResubmittingRouter(new RealmTableTest(), config);
+
+    IStatisticManager manager = new StatisticManagerImpl(config);
+    PeerTest p1 = new PeerTest(1, 1, true, manager);
+    PeerTest p2 = new PeerTest(2, 2, true, manager);
+    PeerTest p3 = new PeerTest(3, 3, true, manager);
+    PeerTest p4 = new PeerTest(4, 4, true, manager);
+
+    List<IPeer> peers = new ArrayList<IPeer>(3);
+    peers.add(p1);
+    peers.add(p2);
+    peers.add(p3);
+    peers.add(p4);
+
+    // Create any message
+    MessageParser messageParser = new MessageParser();
+    IMessage request = messageParser.createEmptyMessage(123, 3l);
+    request.setRequest(true);
+    request.getAvps().addAvp(Avp.SESSION_ID, getSessionId(), true, false, false);
+
+    // Test weighted round robin on a single, resubmitted request
+    assertEquals(p4.toString(), router.selectPeer(request, peers).toString());
+    request.setPeer(p4);
+    assertEquals(p3.toString(), router.selectPeer(request, peers).toString());
+    request.setPeer(p3);
+    assertEquals(p2.toString(), router.selectPeer(request, peers).toString());
+    request.setPeer(p2);
+    assertEquals(p1.toString(), router.selectPeer(request, peers).toString());
+
+    logger.debug("*** Execution of testWeightedRoundRobinResubmittingOnBusyOrUnableToDeliverAnswer completed ***");
+  }
+
+  /*
+   * Validates that, when all peers have been tried and each has responded with with a Busy or Unable to Deliver Answer,
+   * the router gives up trying to assign a peer.
+   */
+  @Test
+  public void testWeightedRoundRobinResubmittingPeersExhaused() throws Exception {
+    logger.debug("*** Executing testWeightedRoundRobinResubmittingPeersExhaused ***");
+
+    Configuration config = new XMLConfiguration("src/test/resources/jdiameter-weightedroundrobinresubmitting-config.xml");
+    WeightedRoundRobinResubmittingRouter router = new WeightedRoundRobinResubmittingRouter(new RealmTableTest(), config);
+
+    IStatisticManager manager = new StatisticManagerImpl(config);
+    PeerTest p1 = new PeerTest(1, 1, true, manager);
+    PeerTest p2 = new PeerTest(2, 2, true, manager);
+    PeerTest p3 = new PeerTest(3, 3, true, manager);
+    PeerTest p4 = new PeerTest(4, 4, true, manager);
+
+    List<IPeer> peers = new ArrayList<IPeer>(3);
+    peers.add(p1);
+    peers.add(p2);
+    peers.add(p3);
+    peers.add(p4);
+
+    // Create any message
+    MessageParser messageParser = new MessageParser();
+    IMessage request = messageParser.createEmptyMessage(123, 3l);
+    request.setRequest(true);
+    request.getAvps().addAvp(Avp.SESSION_ID, getSessionId(), true, false, false);
+
+    // Test weighted round robin on a single, resubmitted request
+    assertEquals(p4.toString(), router.selectPeer(request, peers).toString());
+    request.setPeer(p4);
+    assertEquals(p3.toString(), router.selectPeer(request, peers).toString());
+    request.setPeer(p3);
+    assertEquals(p2.toString(), router.selectPeer(request, peers).toString());
+    request.setPeer(p2);
+    assertEquals(p1.toString(), router.selectPeer(request, peers).toString());
+    request.setPeer(p1);
+    assertNull(router.selectPeer(request, peers));
+
+    logger.debug("*** Execution of testWeightedRoundRobinResubmittingPeersExhaused completed ***");
+  }
+
+
+  /*
+   * Validates that, when a peer responds with a Busy or Unable to Deliver Answer, an alternative peer is
+   * selected to resubmit the Request to, based on the existing Round Robin weighting algorithm, also after
+   * previous unrelated requests have moved the state of the round robin algorithm onwards from the initial state
+   * prior to submitting the (to be resubmitted) request.
+   */
+  @Test
+  public void testWeightedRoundRobinResubmittingOnBusyOrUnableToDeliverAnswerAfterPreviousMessages() throws Exception {
+    logger.debug("*** Executing testWeightedRoundRobinResubmittingOnBusyOrUnableToDeliverAnswerAfterPreviousMessages ***");
+
+    Configuration config = new XMLConfiguration("src/test/resources/jdiameter-weightedroundrobinresubmitting-config.xml");
+    WeightedRoundRobinResubmittingRouter router = new WeightedRoundRobinResubmittingRouter(new RealmTableTest(), config);
+
+    IStatisticManager manager = new StatisticManagerImpl(config);
+    PeerTest p1 = new PeerTest(1, 1, true, manager);
+    PeerTest p2 = new PeerTest(2, 2, true, manager);
+    PeerTest p3 = new PeerTest(3, 3, true, manager);
+    PeerTest p4 = new PeerTest(4, 4, true, manager);
+
+    List<IPeer> peers = new ArrayList<IPeer>(3);
+    peers.add(p1);
+    peers.add(p2);
+    peers.add(p3);
+    peers.add(p4);
+
+    assertEquals(p4.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    assertEquals(p4.toString(), router.selectPeer(peers).toString());
+    assertEquals(p2.toString(), router.selectPeer(peers).toString());
+    assertEquals(p3.toString(), router.selectPeer(peers).toString());
+    assertEquals(p4.toString(), router.selectPeer(peers).toString());
+    assertEquals(p1.toString(), router.selectPeer(peers).toString());
+
+    // Create any message
+    MessageParser messageParser = new MessageParser();
+    IMessage request = messageParser.createEmptyMessage(123, 3l);
+    request.setRequest(true);
+    request.getAvps().addAvp(Avp.SESSION_ID, getSessionId(), true, false, false);
+
+    // Test weighted round robin on a single, resubmitted request
+    assertEquals(p2.toString(), router.selectPeer(request, peers).toString());
+    request.setPeer(p2);
+    assertEquals(p3.toString(), router.selectPeer(request, peers).toString());
+    request.setPeer(p3);
+    assertEquals(p4.toString(), router.selectPeer(request, peers).toString());
+    request.setPeer(p4);
+    assertEquals(p1.toString(), router.selectPeer(request, peers).toString());
+
+    logger.debug("*** Execution of testWeightedRoundRobinResubmittingOnBusyOrUnableToDeliverAnswerAfterPreviousMessages completed ***");
+  }
+
+  private String getSessionId() {
+    long id = uid.nextLong();
+    long high32 = (id & 0xffffffff00000000L) >> 32;
+    long low32 = (id & 0xffffffffL);
+    StringBuilder sb = new StringBuilder();
+    sb.append("localhost").append(";").append(high32).append(";").append(low32);
+    return sb.toString();
+  }
 
     @Test
     public void testWeightedLeastConnections() throws Exception {

@@ -493,7 +493,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
 
   private IMessage processBusyOrUnableToDeliverAnswer(IMessage request, IMessage answer) {
     try {
-      incrementRequestNumber(request);
       router.processBusyOrUnableToDeliverAnswer(request, table);
       return null;
     }
@@ -505,14 +504,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       }
     }
     return answer;
-  }
-
-  private void incrementRequestNumber(IMessage request) throws AvpDataException {
-    int requestNumber = request.getAvps().getAvp(Avp.CC_REQUEST_NUMBER).getInteger32();
-    requestNumber++;
-    logger.trace("Incremented requestNumber to [{}] ", requestNumber);
-    request.getAvps().removeAvp(Avp.CC_REQUEST_NUMBER);
-    request.getAvps().addAvp(Avp.CC_REQUEST_NUMBER, requestNumber);
   }
 
   @Override

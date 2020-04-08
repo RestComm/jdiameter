@@ -19,8 +19,6 @@
 
 package org.jdiameter.client.impl.router;
 
-import static org.jdiameter.api.Avp.CC_REQUEST_NUMBER;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +27,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jdiameter.api.AvpDataException;
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.MetaData;
 import org.jdiameter.api.PeerState;
@@ -47,23 +44,25 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:n.sowen@2scale.net">Nils Sowen</a>
  * @see
- * <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
+ *      <a href=
+ *      "http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
  */
 public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements IRouter {
 
   private static final Logger logger = LoggerFactory.getLogger(WeightedRoundRobinResubmittingRouter.class);
 
+  private static final int ATTEMPTED_PEER_RETENTION_PERIOD_MS = 30000;
+
   private int lastSelectedPeer = -1;
   private int currentWeight = 0;
-  private Map<String, Set<IPeer>> attemptedPeers = new ConcurrentHashMap<String, Set<IPeer>>();
-  private int timeout = 30000;
+  private Map<MessageKey, Set<IPeer>> attemptedPeers = new ConcurrentHashMap<MessageKey, Set<IPeer>>();
 
   protected WeightedRoundRobinResubmittingRouter(IRealmTable table, Configuration config) {
     super(null, null, table, config, null);
   }
 
-  public WeightedRoundRobinResubmittingRouter(IContainer container, IConcurrentFactory concurrentFactory,
-                                  IRealmTable realmTable, Configuration config, MetaData aMetaData) {
+  public WeightedRoundRobinResubmittingRouter(IContainer container, IConcurrentFactory concurrentFactory, IRealmTable realmTable, Configuration config,
+      MetaData aMetaData) {
     super(container, concurrentFactory, realmTable, config, aMetaData);
   }
 
@@ -87,6 +86,7 @@ public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements 
    * max(S) is the maximum weight of all the servers in S;
    * gcd(S) is the greatest common divisor of all server weights in S;
    * <p>
+   *
    * <pre>
    * {@code
    *   while (true) {
@@ -129,10 +129,12 @@ public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements 
    * the balancing algorithm is disturbed and might be distributed uneven.
    * This is likely to happen if peers are flapping.
    *
-   * @param availablePeers list of peers that are in {@link PeerState#OKAY OKAY} state
+   * @param availablePeers
+   *          list of peers that are in {@link PeerState#OKAY OKAY} state
    * @return the selected peer according to algorithm
    * @see
-   * <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
+   *      <a href=
+   *      "http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
    */
   @Override
   public IPeer selectPeer(List<IPeer> availablePeers) {
@@ -146,10 +148,12 @@ public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements 
    * the same peer that responded with the Busy or Unable To Deliver Answer is not selected for
    * any subsequent submissions of the same request.
    *
-   * @param message The message to be re-attempted due to a Busy or Unable To Deliver Answer
-   * @param availablePeers list of peers that are in {@link PeerState#OKAY OKAY} state
+   * @param message
+   *          The message to be re-attempted due to a Busy or Unable To Deliver Answer
+   * @param availablePeers
+   *          list of peers that are in {@link PeerState#OKAY OKAY} state
    * @return the selected peer according to algorithm, ensuring that if the <code>message</code> is passed, that
-   * the same peer that responded with the Busy or Unable To Deliver Answer is not selected a second time
+   *         the same peer that responded with the Busy or Unable To Deliver Answer is not selected a second time
    *
    */
   @Override
@@ -157,28 +161,29 @@ public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements 
     IPeer selectedPeer = null;
     int peerSize = availablePeers != null ? availablePeers.size() : 0;
 
-    logger.debug("peerSize " + peerSize);
     // Return none if empty, or first if only one member found
     if (peerSize <= 0) {
       return null;
     }
 
-    if (message != null) {
-      if (message.getPeer() != null) {
-        addAttemptedPeer(message, message.getPeer());
+    if (message != null && message.getPeer() != null) {
+      addAttemptedPeer(message, message.getPeer());
+
+      long numberOfAttempts = 0;
+      MessageKey messageKey = getMessageKey(message);
+      Set<IPeer> peerSet = attemptedPeers.get(messageKey);
+      if (peerSet != null) {
+        numberOfAttempts = peerSet.size();
+      }
+      if (logger.isTraceEnabled()) {
+        logger.trace("Selecting subsequent peer for {} [numberOfAttempts={}]", messageKey, numberOfAttempts);
       }
 
-      long requestNumber = 0;
-      try {
-        requestNumber = message.getAvps().getAvp(CC_REQUEST_NUMBER).getUnsigned32();
-        logger.debug("Selecting subsequent peer for [sessionId={}, requestNumber={}]", message.getSessionId(), requestNumber);
-      }
-      catch (AvpDataException e) {
-        e.printStackTrace();
-      }
-
-      if (requestNumber == peerSize) {
-        logger.debug("All peers exhausted for message [sessionId={}], giving up...", message.getSessionId());
+      if (numberOfAttempts == peerSize) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("All peers exhausted for {}, giving up...", messageKey);
+        }
+        removeAttemptedPeers(messageKey);
         return null;
       }
     }
@@ -193,12 +198,11 @@ public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements 
     for (IPeer peer : availablePeers) {
       maxWeight = Math.max(maxWeight, peer.getRating());
       gcd = (gcd == null) ? peer.getRating() : gcd(gcd, peer.getRating());
-      logger.debug("Peer [uri={}, realmName={}, rating={}]", peer.getUri(), peer.getRealmName(), peer.getRating());
     }
 
     // Find best matching candidate. Synchronized here due to consistent changes on member variables
     synchronized (this) {
-      for (; ; ) {
+      for (;;) {
         lastSelectedPeer = (lastSelectedPeer + 1) % peerSize;
         if (lastSelectedPeer == 0) {
           currentWeight = currentWeight - gcd;
@@ -212,77 +216,85 @@ public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements 
         }
         IPeer candidate = availablePeers.get(lastSelectedPeer);
         if (candidate.getRating() >= currentWeight) {
+          if (message != null && message.getPeer() != null) {
+            if (isPeerPreviouslyAttempted(lastSelectedPeer, availablePeers, message)) {
+              continue;
+            }
+          }
+
           selectedPeer = availablePeers.get(lastSelectedPeer);
-          if (message != null) {
-            if (message.getPeer() != null) {
-              logger.debug("Moving selected Peer [uri={}, realmName={}, rating={}] to next peer as it looks like to be a subsequent attempt of this message and last peer of this message", message.getPeer().getUri(), message.getPeer().getRealmName(), message.getPeer().getRating());
-              lastSelectedPeer = selectPeerForSubsequentSubmission(lastSelectedPeer, availablePeers, message);
-              if (lastSelectedPeer < 0) {
-                logger.debug("No unattempted peers left for message [sessionId={}], giving up...", message.getSessionId());
-                return null;
-              }
-              else {
-                selectedPeer = availablePeers.get(lastSelectedPeer);
-              }
-            } else logger.trace("message.getPeer() == null");
-          } else logger.trace("message != null");
-          logger.trace("Selected Peer [uri={}, realmName={}, rating={}]", selectedPeer.getUri(), selectedPeer.getRealmName(), selectedPeer.getRating());
+
+          if (logger.isTraceEnabled()) {
+            logger.trace("Selected Peer [uri={}, realmName={}, rating={}]", selectedPeer.getUri(), selectedPeer.getRealmName(), selectedPeer.getRating());
+          }
           return selectedPeer;
         }
       }
     }
   }
 
-  private int selectPeerForSubsequentSubmission(int selectedPeerIndex, List<IPeer> availablePeers, IMessage message) {
+  private MessageKey getMessageKey(final IMessage message) {
+    return new MessageKey(message.getSessionId(), message.getEndToEndIdentifier());
+  }
 
-    logger.debug("Checking peer history of message [sessionId={}] ", message.getSessionId());
-
-    if (!attemptedPeers.containsKey(message.getSessionId())) {
-      logger.debug("attemptedPeers does not contain selected peer so return it");
-      return selectedPeerIndex;
+  private boolean isPeerPreviouslyAttempted(int selectedPeerIndex, List<IPeer> availablePeers, IMessage message) {
+    boolean isPeerPreviouslyAttempted = false;
+    final MessageKey messageKey = getMessageKey(message);
+    if (logger.isTraceEnabled()) {
+      logger.trace("Checking whether selected Peer [id={}] has already had {} sent to it", selectedPeerIndex, messageKey);
     }
-    for (int i = 0; i < availablePeers.size(); i++) {
+
+    if (attemptedPeers.containsKey(messageKey)) {
       IPeer candidate = availablePeers.get(selectedPeerIndex);
-      if (attemptedPeers.get(message.getSessionId()).contains(candidate)) {
-        logger.debug("Peer [{}] has been tried before, skipping to next peer", candidate.getUri());
-        selectedPeerIndex = selectedPeerIndex < availablePeers.size() - 1 ? selectedPeerIndex + 1 : 0;
-        continue;
-      } else {
-        logger.debug("Peer [{}] hasn't been tried for message [sessionId={}]", candidate.getUri(), message.getSessionId());
-        return selectedPeerIndex;
+      if (attemptedPeers.get(messageKey).contains(candidate)) {
+        if (logger.isTraceEnabled()) {
+          logger.trace("Peer [uri={}, realmName={}, rating={}] has been tried before, try next peer", candidate.getUri(), candidate.getRealmName(),
+              candidate.getRating());
+        }
+        isPeerPreviouslyAttempted = true;
       }
     }
-    logger.debug("All peers have been tried, returning -1");
-    attemptedPeers.remove(message.getSessionId());
-    return -1;
+
+    return isPeerPreviouslyAttempted;
   }
 
   private synchronized void addAttemptedPeer(final IMessage message, IPeer peer) {
-    if (attemptedPeers.containsKey(message.getSessionId())) {
-      attemptedPeers.get(message.getSessionId()).add(peer);
-    } else {
+    final MessageKey messageKey = getMessageKey(message);
+    if (attemptedPeers.containsKey(messageKey)) {
+      attemptedPeers.get(messageKey).add(peer);
+    }
+    else {
       Set<IPeer> peerSet = new HashSet<IPeer>();
       peerSet.add(peer);
-      attemptedPeers.put(message.getSessionId(), peerSet);
+      attemptedPeers.put(messageKey, peerSet);
 
       new Timer().schedule(new TimerTask() {
         @Override
         public void run() {
-          removeAttemptedPeers(message.getSessionId());
+          removeAttemptedPeers(messageKey);
         }
-      }, timeout);
+      }, ATTEMPTED_PEER_RETENTION_PERIOD_MS);
     }
   }
 
-  void removeAttemptedPeers(String sessionId) {
-    logger.debug("Removing attemptedPeers for [sessionId={}] (currently [attemptedPeers.size()={}])  ", sessionId, attemptedPeers.size());
-    Set<IPeer> peerSet = attemptedPeers.remove(sessionId);
-    if (peerSet != null) {
-      logger.trace("peerSet with [size={}] has been removed for message [sessionId={}]" + peerSet.size(), sessionId);
-    } else {
-      logger.warn("No peers removed from attemptedPeers for [sessionId={}]!", sessionId);
+  private void removeAttemptedPeers(MessageKey messageKey) {
+    if (logger.isDebugEnabled()) {
+      logger.debug("Removing attemptedPeers for {} (currently [attemptedPeers.size()={}])  ", messageKey, attemptedPeers.size());
     }
-    logger.debug("Done removing attemptedPeers for [sessionId={}] (now [attemptedPeers.size()={}])  ", sessionId, attemptedPeers.size());
+    Set<IPeer> peerSet = attemptedPeers.remove(messageKey);
+    if (peerSet != null) {
+      if (logger.isTraceEnabled()) {
+        logger.trace("peerSet with [size={}] has been removed for {}", peerSet.size(), messageKey);
+      }
+    }
+    else {
+      if (logger.isWarnEnabled()) {
+        logger.warn("No peers removed from attemptedPeers for {}!", messageKey);
+      }
+    }
+    if (logger.isDebugEnabled()) {
+      logger.debug("Done removing attemptedPeers for {} (now [attemptedPeers.size()={}])  ", messageKey, attemptedPeers.size());
+    }
   }
 
   /**
@@ -295,5 +307,68 @@ public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements 
    */
   protected int gcd(int a, int b) {
     return (b == 0) ? a : gcd(b, a % b);
+  }
+
+  /**
+   * Defines a class which can be used to uniquely define any single message within any given session.
+   *
+   */
+  private class MessageKey {
+    private String sessionId;
+    private long endToEndId;
+
+    MessageKey(String sessionId, long endToEndId) {
+      super();
+      this.sessionId = sessionId;
+      this.endToEndId = endToEndId;
+    }
+
+    @Override
+    public String toString() {
+      return "MessageKey [sessionId=" + sessionId + ", endToEndId=" + endToEndId + "]";
+    }
+
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + getOuterType().hashCode();
+      result = prime * result + (int) (endToEndId ^ (endToEndId >>> 32));
+      result = prime * result + ((sessionId == null) ? 0 : sessionId.hashCode());
+      return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (getClass() != obj.getClass()) {
+        return false;
+      }
+      MessageKey other = (MessageKey) obj;
+      if (!getOuterType().equals(other.getOuterType())) {
+        return false;
+      }
+      if (endToEndId != other.endToEndId) {
+        return false;
+      }
+      if (sessionId == null) {
+        if (other.sessionId != null) {
+          return false;
+        }
+      }
+      else if (!sessionId.equals(other.sessionId)) {
+        return false;
+      }
+      return true;
+    }
+
+    private WeightedRoundRobinResubmittingRouter getOuterType() {
+      return WeightedRoundRobinResubmittingRouter.this;
+    }
   }
 }
