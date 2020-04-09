@@ -639,6 +639,18 @@ public class RouterImpl implements IRouter {
     }
   }
 
+  /**
+   * This method should always return false unless specifically designed to handle
+   * submitting requests which have received a Busy or Unable to Deliver Answer from one peer, to an alternative peer, and to avoid
+   * perpetual re-submission of such requests.
+   *
+   * @return <code>false</code>
+   */
+  @Override
+  public boolean canProcessBusyOrUnableToDeliverAnswer() {
+    return false;
+  }
+
   public void processBusyOrUnableToDeliverAnswer(IRequest request, IPeerTable table) throws InternalException, RouteException {
     try {
       table.sendMessage((IMessage) request);

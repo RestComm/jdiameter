@@ -492,15 +492,18 @@ public class PeerImpl extends AbstractPeer implements IPeer {
   }
 
   private IMessage processBusyOrUnableToDeliverAnswer(IMessage request, IMessage answer) {
-    try {
-      router.processBusyOrUnableToDeliverAnswer(request, table);
-      return null;
-    }
-    catch (Throwable exc) {
-      // Any error when attempting a resubmit to an alternative peer simply results in the original
-      // Busy or Unable to Deliver Answer being returned
-      if (logger.isErrorEnabled()) {
-        logger.error("Failed to reprocess busy or unable to deliver response!", exc);
+    if (router.canProcessBusyOrUnableToDeliverAnswer()) {
+      try {
+        logger.debug("Message with [sessionId={}] received a Busy or Unable to Deliver Answer and will be resubmitted.", request.getSessionId());
+        router.processBusyOrUnableToDeliverAnswer(request, table);
+        return null;
+      }
+      catch (Throwable exc) {
+        // Any error when attempting a resubmit to an alternative peer simply results in the original
+        // Busy or Unable to Deliver Answer being returned
+        if (logger.isErrorEnabled()) {
+          logger.error("Failed to reprocess busy or unable to deliver response - all peers exhausted?", exc);
+        }
       }
     }
     return answer;
@@ -1062,8 +1065,6 @@ public class PeerImpl extends AbstractPeer implements IPeer {
           }
           avpResCode = message.getAvps().getAvp(RESULT_CODE);
           if (isBusyOrUnableToDeliverAnswer(avpResCode, message)) {
-            logger.debug("Message with [sessionId={}] received a Busy or Unable to Deliver Answer and will be resubmitted.", message.getSessionId());
-            message.setListener(request.getEventListener());
             message = processBusyOrUnableToDeliverAnswer(request, message);
             // if return value is not null, there was some error, lets try to invoke listener if it exists...
             isProcessed = message == null;

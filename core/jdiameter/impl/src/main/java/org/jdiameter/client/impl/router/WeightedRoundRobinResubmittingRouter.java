@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * Weighted round-robin router implementation
  *
  * @author <a href="mailto:n.sowen@2scale.net">Nils Sowen</a>
+ * @author <a href="mailto:stephen.dwyer@kcom.com">Steve Dwyer</a>
  * @see
  *      <a href=
  *      "http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
@@ -64,6 +65,18 @@ public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements 
   public WeightedRoundRobinResubmittingRouter(IContainer container, IConcurrentFactory concurrentFactory, IRealmTable realmTable, Configuration config,
       MetaData aMetaData) {
     super(container, concurrentFactory, realmTable, config, aMetaData);
+  }
+
+  /**
+   * The WeightedRoundRobinResubmittingRouter is specifically designed to handle submitting requests
+   * which have received a Busy or Unable to Deliver Answer from one peer, to an alternative peer,
+   * and to avoid perpetual re-submission of such requests.
+   *
+   * @return <code>true</code>
+   */
+  @Override
+  public boolean canProcessBusyOrUnableToDeliverAnswer() {
+    return true;
   }
 
   /**
@@ -234,7 +247,7 @@ public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements 
   }
 
   private MessageKey getMessageKey(final IMessage message) {
-    return new MessageKey(message.getSessionId(), message.getEndToEndIdentifier());
+    return new MessageKey(message);
   }
 
   private boolean isPeerPreviouslyAttempted(int selectedPeerIndex, List<IPeer> availablePeers, IMessage message) {
@@ -316,16 +329,18 @@ public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements 
   private class MessageKey {
     private String sessionId;
     private long endToEndId;
+    private int flags;
 
-    MessageKey(String sessionId, long endToEndId) {
+    MessageKey(IMessage message) {
       super();
-      this.sessionId = sessionId;
-      this.endToEndId = endToEndId;
+      this.sessionId = message.getSessionId();
+      this.endToEndId = message.getEndToEndIdentifier();
+      this.flags = message.getFlags();
     }
 
     @Override
     public String toString() {
-      return "MessageKey [sessionId=" + sessionId + ", endToEndId=" + endToEndId + "]";
+      return "MessageKey [sessionId=" + sessionId + ", endToEndId=" + endToEndId + ", flags=" + flags + "]";
     }
 
     @Override
@@ -334,6 +349,7 @@ public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements 
       int result = 1;
       result = prime * result + getOuterType().hashCode();
       result = prime * result + (int) (endToEndId ^ (endToEndId >>> 32));
+      result = prime * result + flags;
       result = prime * result + ((sessionId == null) ? 0 : sessionId.hashCode());
       return result;
     }
@@ -354,6 +370,9 @@ public class WeightedRoundRobinResubmittingRouter extends RouterImpl implements 
         return false;
       }
       if (endToEndId != other.endToEndId) {
+        return false;
+      }
+      if (flags != other.flags) {
         return false;
       }
       if (sessionId == null) {

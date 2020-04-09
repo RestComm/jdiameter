@@ -78,6 +78,8 @@ public class TestRouter extends TestCase {
     Configuration config = new XMLConfiguration("src/test/resources/jdiameter-weightedroundrobin-config.xml");
     WeightedRoundRobinRouter router = new WeightedRoundRobinRouter(new RealmTableTest(), config);
 
+    assertFalse(router.canProcessBusyOrUnableToDeliverAnswer());
+
     IStatisticManager manager = new StatisticManagerImpl(config);
     PeerTest p1 = new PeerTest(1, 1, true, manager);
     PeerTest p2 = new PeerTest(2, 1, true, manager);
@@ -183,6 +185,8 @@ public class TestRouter extends TestCase {
 
     Configuration config = new XMLConfiguration("src/test/resources/jdiameter-weightedroundrobinresubmitting-config.xml");
     WeightedRoundRobinResubmittingRouter router = new WeightedRoundRobinResubmittingRouter(new RealmTableTest(), config);
+
+    assertTrue(router.canProcessBusyOrUnableToDeliverAnswer());
 
     IStatisticManager manager = new StatisticManagerImpl(config);
     PeerTest p1 = new PeerTest(1, 1, true, manager);
@@ -290,6 +294,8 @@ public class TestRouter extends TestCase {
     Configuration config = new XMLConfiguration("src/test/resources/jdiameter-weightedroundrobinresubmitting-config.xml");
     WeightedRoundRobinResubmittingRouter router = new WeightedRoundRobinResubmittingRouter(new RealmTableTest(), config);
 
+    assertTrue(router.canProcessBusyOrUnableToDeliverAnswer());
+
     IStatisticManager manager = new StatisticManagerImpl(config);
     PeerTest p1 = new PeerTest(1, 1, true, manager);
     PeerTest p2 = new PeerTest(2, 2, true, manager);
@@ -330,6 +336,8 @@ public class TestRouter extends TestCase {
 
     Configuration config = new XMLConfiguration("src/test/resources/jdiameter-weightedroundrobinresubmitting-config.xml");
     WeightedRoundRobinResubmittingRouter router = new WeightedRoundRobinResubmittingRouter(new RealmTableTest(), config);
+
+    assertTrue(router.canProcessBusyOrUnableToDeliverAnswer());
 
     IStatisticManager manager = new StatisticManagerImpl(config);
     PeerTest p1 = new PeerTest(1, 1, true, manager);
@@ -375,6 +383,8 @@ public class TestRouter extends TestCase {
 
     Configuration config = new XMLConfiguration("src/test/resources/jdiameter-weightedroundrobinresubmitting-config.xml");
     WeightedRoundRobinResubmittingRouter router = new WeightedRoundRobinResubmittingRouter(new RealmTableTest(), config);
+
+    assertTrue(router.canProcessBusyOrUnableToDeliverAnswer());
 
     IStatisticManager manager = new StatisticManagerImpl(config);
     PeerTest p1 = new PeerTest(1, 1, true, manager);
@@ -428,6 +438,8 @@ public class TestRouter extends TestCase {
 
     Configuration config = new XMLConfiguration("src/test/resources/jdiameter-weightedleastconnections-config.xml");
     WeightedLeastConnectionsRouter router = new WeightedLeastConnectionsRouter(new RealmTableTest(), config);
+
+    assertFalse(router.canProcessBusyOrUnableToDeliverAnswer());
 
     IStatisticManager manager = new StatisticManagerImpl(config);
     PeerTest p1 = new PeerTest(1, 1, true, manager);
