@@ -19,25 +19,26 @@
 
 package org.jdiameter.client.impl.router;
 
+import java.util.List;
+
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.MetaData;
 import org.jdiameter.api.PeerState;
 import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
-
 import org.jdiameter.server.api.IRouter;
-
-import java.util.List;
 
 /**
  * Weighted round-robin router implementation
  *
- * @see <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
  * @author <a href="mailto:n.sowen@2scale.net">Nils Sowen</a>
+ * @see
+ * <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
  */
-public class WeightedRoundRobinRouter extends RouterImpl implements IRouter{
+public class WeightedRoundRobinRouter extends RouterImpl implements IRouter {
 
   private int lastSelectedPeer = -1;
   private int currentWeight = 0;
@@ -74,17 +75,17 @@ public class WeightedRoundRobinRouter extends RouterImpl implements IRouter{
    * <pre>
    * {@code
    *   while (true) {
-   *   i = (i + 1) mod n;
-   *   if (i == 0) {
-   *     cw = cw - gcd(S);
-   *     if (cw <= 0) {
-   *       cw = max(S);
-   *       if (cw == 0)
-   *       return NULL;
+   *     i = (i + 1) mod n;
+   *     if (i == 0) {
+   *       cw = cw - gcd(S);
+   *       if (cw <= 0) {
+   *         cw = max(S);
+   *         if (cw == 0)
+   *           return NULL;
+   *       }
    *     }
-   *   }
-   *   if (W(Si) >= cw)
-   *     return Si;
+   *     if (W(Si) >= cw)
+   *       return Si;
    *   }
    * }
    * </pre>
@@ -108,18 +109,31 @@ public class WeightedRoundRobinRouter extends RouterImpl implements IRouter{
    * <p>
    * This method is internally synchronized due to concurrent modifications to lastSelectedPeer and currentWeight.
    * Please consider this when relying on heavy throughput.
-   *
+   * <p>
    * Please note: if the list of availablePeers changes between calls (e.g. if a peer becomes active or inactive),
    * the balancing algorithm is disturbed and might be distributed uneven.
    * This is likely to happen if peers are flapping.
    *
    * @param availablePeers list of peers that are in {@link PeerState#OKAY OKAY} state
    * @return the selected peer according to algorithm
-   * @see <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
+   * @see
+   * <a href="http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling">http://kb.linuxvirtualserver.org/wiki/Weighted_Round-Robin_Scheduling</a>
    */
   @Override
   public IPeer selectPeer(List<IPeer> availablePeers) {
+    return selectPeer(null, availablePeers);
+  }
 
+  /**
+   * Select peer by weighted round-robin scheduling
+   *
+   * @param message the message to be sent
+   * @param availablePeers list of peers that are in {@link PeerState#OKAY OKAY} state
+   * @return the selected peer according to algorithm
+   *
+   */
+  @Override
+  public IPeer selectPeer(IMessage message, List<IPeer> availablePeers) {
     int peerSize = availablePeers != null ? availablePeers.size() : 0;
 
     // Return none if empty, or first if only one member found
@@ -140,7 +154,7 @@ public class WeightedRoundRobinRouter extends RouterImpl implements IRouter{
 
     // Find best matching candidate. Synchronized here due to consistent changes on member variables
     synchronized (this) {
-      for ( ;; ) {
+      for (; ; ) {
         lastSelectedPeer = (lastSelectedPeer + 1) % peerSize;
         if (lastSelectedPeer == 0) {
           currentWeight = currentWeight - gcd;

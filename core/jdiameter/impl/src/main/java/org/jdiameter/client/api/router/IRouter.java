@@ -121,6 +121,30 @@ public interface IRouter  {
    */
   void processRedirectAnswer(IRequest request, IAnswer answer, IPeerTable table) throws InternalException, RouteException;
 
+
+  /**
+   * Indicates whether this router implementation is able to resubmit requests to an alternative peer,
+   * for which a Busy or Unable to Deliver Answer has already been received from one peer.<br /><br />
+   *
+   * <strong>Note: </strong> Returning <code>true</code> from this method when the router implementation has not been designed to
+   * handle resubmitting such requests can result in a request being resubmitted perpetually.
+   *
+   * @return <code>false</code> by default. <code>true</code> when and only when the router implementation has specific logic to handle
+   * submitting requests which have received a Busy or Unable to Deliver Answer from one peer, to an alternative peer, and to avoid
+   * perpetual re-submission of such requests.
+   */
+  boolean canProcessBusyOrUnableToDeliverAnswer();
+
+
+  /**
+   * Called when a 3002 or 3004 is received for a request. This method attempts to resubmit the request to an alternative peer.
+   *
+   * @param request
+   * @param table
+   */
+  void processBusyOrUnableToDeliverAnswer(IRequest request, IPeerTable table) throws InternalException, RouteException;
+
+
   /**
    * Based on Redirect entries or any other factors, this method changes route information.
    * @param message
@@ -128,6 +152,8 @@ public interface IRouter  {
    * @throws RouteException
    * @throws AvpDataException
    */
+
+
   boolean updateRoute(IRequest message) throws RouteException, AvpDataException;
 
 }

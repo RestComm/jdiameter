@@ -383,6 +383,17 @@ public class PeerImpl extends AbstractPeer implements IPeer {
     }
   }
 
+  private boolean isBusyOrUnableToDeliverAnswer(Avp avpResCode, IMessage answer) {
+    try {
+      // E-bit set indicating a protocol error, and Result Code one of 3002 or 3004
+      return (answer.getFlags() & 0x20) != 0 && avpResCode != null
+          && (avpResCode.getInteger32() == ResultCode.TOO_BUSY || avpResCode.getInteger32() == ResultCode.UNABLE_TO_DELIVER);
+    }
+    catch (AvpDataException e) {
+      return false;
+    }
+  }
+
   @Override
   public IStatistic getStatistic() {
     return statistic;
@@ -476,6 +487,24 @@ public class PeerImpl extends AbstractPeer implements IPeer {
       answer.setError(true);
       answer.getAvps().removeAvp(RESULT_CODE);
       answer.getAvps().addAvp(RESULT_CODE, resultCode, true, false, true);
+    }
+    return answer;
+  }
+
+  private IMessage processBusyOrUnableToDeliverAnswer(IMessage request, IMessage answer) {
+    if (router.canProcessBusyOrUnableToDeliverAnswer()) {
+      try {
+        logger.debug("Message with [sessionId={}] received a Busy or Unable to Deliver Answer and will be resubmitted.", request.getSessionId());
+        router.processBusyOrUnableToDeliverAnswer(request, table);
+        return null;
+      }
+      catch (Throwable exc) {
+        // Any error when attempting a resubmit to an alternative peer simply results in the original
+        // Busy or Unable to Deliver Answer being returned
+        if (logger.isErrorEnabled()) {
+          logger.error("Failed to reprocess busy or unable to deliver response - all peers exhausted?", exc);
+        }
+      }
     }
     return answer;
   }
@@ -1032,6 +1061,12 @@ public class PeerImpl extends AbstractPeer implements IPeer {
             message.setListener(request.getEventListener());
             message = processRedirectAnswer(request, message);
             //if return value is not null, there was some error, lets try to invoke listener if it exists...
+            isProcessed = message == null;
+          }
+          avpResCode = message.getAvps().getAvp(RESULT_CODE);
+          if (isBusyOrUnableToDeliverAnswer(avpResCode, message)) {
+            message = processBusyOrUnableToDeliverAnswer(request, message);
+            // if return value is not null, there was some error, lets try to invoke listener if it exists...
             isProcessed = message == null;
           }
 

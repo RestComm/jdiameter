@@ -19,21 +19,22 @@
 
 package org.jdiameter.client.impl.router;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.jdiameter.api.Configuration;
 import org.jdiameter.api.MetaData;
 import org.jdiameter.api.PeerState;
 import org.jdiameter.client.api.IContainer;
+import org.jdiameter.client.api.IMessage;
 import org.jdiameter.client.api.controller.IPeer;
 import org.jdiameter.client.api.controller.IRealmTable;
 import org.jdiameter.common.api.concurrent.IConcurrentFactory;
 import org.jdiameter.common.api.statistic.IStatistic;
 import org.jdiameter.common.api.statistic.IStatisticRecord;
+import org.jdiameter.server.api.IRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Arrays;
-import java.util.List;
-import org.jdiameter.server.api.IRouter;
 
 /**
  * Weighted Least-Connections router implementation<br/><br/>
@@ -102,13 +103,13 @@ public class WeightedLeastConnectionsRouter extends RouterImpl implements IRoute
    * <pre>
    * {@code
    *   for (m = 0; m < n; m++) {
-   *   if (W(Sm) > 0) {
-   *     for (i = m+1; i < n; i++) {
-   *     if (C(Sm)*W(Si) > C(Si)*W(Sm))
-   *       m = i;
+   *     if (W(Sm) > 0) {
+   *       for (i = m+1; i < n; i++) {
+   *         if (C(Sm)*W(Si) > C(Si)*W(Sm))
+   *           m = i;
+   *       }
+   *       return Sm;
    *     }
-   *     return Sm;
-   *   }
    *   }
    *   return NULL;
    * }
@@ -125,6 +126,19 @@ public class WeightedLeastConnectionsRouter extends RouterImpl implements IRoute
    */
   @Override
   public IPeer selectPeer(List<IPeer> availablePeers) {
+    return selectPeer(null, availablePeers);
+  }
+
+  /**
+   * Return peer with least connections
+   *
+   * @param message the message to be sent
+   * @param availablePeers list of peers that are in {@link PeerState#OKAY OKAY} state
+   * @return the selected peer according to algorithm
+   *
+   */
+  @Override
+  public IPeer selectPeer(IMessage message, List<IPeer> availablePeers) {
     int peerSize = availablePeers != null ? availablePeers.size() : 0;
 
     // Return none if empty, or first if only one member found

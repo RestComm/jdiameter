@@ -507,7 +507,7 @@ public class RouterImpl implements IRouter {
       }
 
       // Balancing
-      IPeer peer = selectPeer(availablePeers);
+      IPeer peer = selectPeer(message, availablePeers);
       if (peer == null) {
         throw new RouteException("Unable to find valid connection to peer[" + destHost + "] in realm[" + destRealm + "]");
       }
@@ -626,6 +626,33 @@ public class RouterImpl implements IRouter {
         }
       }
       //now send
+      table.sendMessage((IMessage) request);
+    }
+    catch (AvpDataException exc) {
+      throw new InternalException(exc);
+    }
+    catch (IllegalDiameterStateException e) {
+      throw new InternalException(e);
+    }
+    catch (IOException e) {
+      throw new InternalException(e);
+    }
+  }
+
+  /**
+   * This method should always return false unless specifically designed to handle
+   * submitting requests which have received a Busy or Unable to Deliver Answer from one peer, to an alternative peer, and to avoid
+   * perpetual re-submission of such requests.
+   *
+   * @return <code>false</code>
+   */
+  @Override
+  public boolean canProcessBusyOrUnableToDeliverAnswer() {
+    return false;
+  }
+
+  public void processBusyOrUnableToDeliverAnswer(IRequest request, IPeerTable table) throws InternalException, RouteException {
+    try {
       table.sendMessage((IMessage) request);
     }
     catch (AvpDataException exc) {
@@ -795,6 +822,10 @@ public class RouterImpl implements IRouter {
       }
     }
     return p;
+  }
+
+  protected IPeer selectPeer(IMessage message, List<IPeer> availablePeers) {
+    return selectPeer(availablePeers);
   }
 
   //    protected void redirectProcessing(IMessage message, final String destRealm, final String destHost) throws AvpDataException {
