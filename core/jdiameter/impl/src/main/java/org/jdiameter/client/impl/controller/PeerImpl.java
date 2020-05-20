@@ -1060,9 +1060,10 @@ public class PeerImpl extends AbstractPeer implements IPeer {
           if (isRedirectAnswer(avpResCode, message)) {
             message.setListener(request.getEventListener());
             message = processRedirectAnswer(request, message);
-            // if return value is not null, there was some error, lets try to invoke listener if it exists...
+            //if return value is not null, there was some error, lets try to invoke listener if it exists...
             isProcessed = message == null;
           }
+          avpResCode = message.getAvps().getAvp(RESULT_CODE);
           if (isBusyOrUnableToDeliverAnswer(avpResCode, message)) {
             message = processBusyOrUnableToDeliverAnswer(request, message);
             // if return value is not null, there was some error, lets try to invoke listener if it exists...
