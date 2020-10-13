@@ -20,7 +20,7 @@
     <get.opt.version>1.0.9</get.opt.version>
     <picocontainer.version>2.13.5</picocontainer.version>
     <slf4j.version>1.7.2</slf4j.version>
-    <junit.version>4.11</junit.version>
+    <junit.version>4.13.1</junit.version>
     <version.surefire>2.19</version.surefire>
   </properties>
 
