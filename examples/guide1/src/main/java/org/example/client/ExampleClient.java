@@ -238,7 +238,7 @@ public class ExampleClient implements EventListener<Request, Answer> {
   }
 
   private void sendNextRequest(int enumType) throws InternalException, IllegalDiameterStateException, RouteException, OverloadException {
-    Request r = this.session.createRequest(commandCode, this.authAppId, realmName, serverURI);
+    Request r = this.session.createRequest(commandCode, this.authAppId, realmName, serverHost);
     // here we have all except our custom avps
 
     AvpSet requestAvps = r.getAvps();
