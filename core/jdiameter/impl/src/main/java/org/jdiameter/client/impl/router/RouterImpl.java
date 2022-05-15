@@ -118,6 +118,8 @@ public class RouterImpl implements IRouter {
   public static final int ALL_APPLICATION = 4;
   public static final int ALL_HOST = 5;
   public static final int ALL_USER = 6;
+  
+  public static final long VENDOR_ID_3GPP = 10415L;
   //
   private static final Logger logger = LoggerFactory.getLogger(RouterImpl.class);
   protected MetaData metaData;
@@ -660,10 +662,20 @@ public class RouterImpl implements IRouter {
   /**
    * @param request
    * @param destHost
+ * @throws AvpDataException 
    */
-  private void updateRoute(IRequest request, String destHost) {
+  private void updateRoute(IRequest request, String destHost) throws AvpDataException {
     // Realm does not change I think... :)
-    request.getAvps().removeAvp(Avp.DESTINATION_HOST);
+    AvpSet destinationHostAvps = request.getAvps().removeAvp(Avp.DESTINATION_HOST);
+    if (destinationHostAvps != null && destinationHostAvps.size() > 0) {
+    	Avp destinationHostAvp = destinationHostAvps.getAvpByIndex(0);
+    	if (destinationHostAvp != null) {
+    		String prevDestHost = destinationHostAvp.getDiameterIdentity();
+    		if (prevDestHost.equals(destHost)) { // loop detected
+    			request.getAvps().addAvp(Avp.AAA_FAILURE_INDICATION, 1L, VENDOR_ID_3GPP, true, false,  true);
+    		}
+    	}
+    }
     request.getAvps().addAvp(Avp.DESTINATION_HOST, destHost, true, false,  true);
   }
 
