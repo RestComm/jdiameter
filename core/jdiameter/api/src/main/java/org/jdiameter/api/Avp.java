@@ -2761,6 +2761,17 @@ public interface Avp extends Wrapper, Serializable {
   // Service-Area-Identity 1607 3GPP TS 29.272;
   // GMLC-Address 2405 3GPP TS 29.173;
   // Visited-PLMN-Id 1407 3GPP TS 29.272
+  
+  /********************************************************/
+  /*** SWm interface (3GPP AAA - AGW) AVPs (3GPP TS 29.273) ***/
+  /*** Diameter SWM Application (EAP Protocol) ***/
+  /********************************************************/
+
+  /**
+   * SWm (3GPP TS 29.273-f10) AAA-Failure-Indication AVP code
+   */
+  int AAA_FAILURE_INDICATION = 1518;
+  
 
   /**
    * @return the AVP code.
