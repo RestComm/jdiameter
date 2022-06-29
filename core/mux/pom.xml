@@ -21,7 +21,7 @@
     -->
 
     <version.wildfly.as>10.1.0.Final</version.wildfly.as>
-    <version.wildfly.core>2.2.0.Final</version.wildfly.core>
+    <version.wildfly.core>6.0.0.Final</version.wildfly.core>
   </properties>
 
   <packaging>pom</packaging>
