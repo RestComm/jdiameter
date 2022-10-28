@@ -73,10 +73,19 @@ public class NetworkGuard implements INetworkGuard {
     this.serverConnections = new ArrayList<SCTPServerConnection>();
 
     try {
-      for (InetAddress ia : inetAddresses) {
-        final SCTPServerConnection sctpServerConnection = new SCTPServerConnection(null, ia, port, parser, null, this);
-        this.serverConnections.add(sctpServerConnection);
+      if (localAddresses.length < 1) {
+        throw new Exception("Need at least one IP address configured");
+      } else if (localAddresses.length > 4) {
+        throw new IllegalArgumentException("Maximum of 4 IPAddress attributes allowed");
       }
+
+      final InetAddress firstAddress = localAddresses[0];
+      final String[] extraHostAddresses = localAddresses.length > 1 ? new String[localAddresses.length - 1] : null;
+      for(int i = 1; i < localAddresses.length; i++) {
+        extraHostAddresses[i - 1] = localAddresses[i].getHostAddress();
+      }
+      final SCTPServerConnection sctpServerConnection = new SCTPServerConnection(null, firstAddress, port, parser, null, this, extraHostAddresses);
+      this.serverConnections.add(sctpServerConnection);
     }
     catch (Exception exc) {
       try {
