@@ -151,9 +151,11 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
   @Override
   public boolean handleEvent(StateEvent event) throws InternalException, OverloadException {
     ServerRoSessionState newState = null;
-    ServerRoSessionState state = sessionData.getServerRoSessionState();
     try {
       sendAndStateLock.lock();
+
+      // Get state after lock acquiring
+      ServerRoSessionState state = sessionData.getServerRoSessionState();
 
       // Can be null if there is no state transition, transition to IDLE state should terminate this app session
       Event localEvent = (Event) event;
@@ -224,6 +226,10 @@ public class ServerRoSessionImpl extends AppRoSessionImpl implements ServerRoSes
             case RECEIVED_TERMINATE:
               Answer errorAnswer = ((Request) localEvent.getRequest().getMessage()).createAnswer(ResultCode.UNKNOWN_SESSION_ID);
               session.send(errorAnswer);
+
+              // release this session
+              release();
+
               logger.debug("Received an UPDATE or TERMINATE for a new session. Answering with 5002 (UNKNOWN_SESSION_ID) and terminating session.");
               // and let it throw exception anyway ...
             default:
