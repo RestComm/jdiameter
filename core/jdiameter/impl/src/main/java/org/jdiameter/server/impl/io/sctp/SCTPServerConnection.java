@@ -72,11 +72,12 @@ public class SCTPServerConnection implements IConnection {
 
   // this creates the listening server - no dest address is passed it is automatically 0.0.0.0:0
   public SCTPServerConnection(Configuration config, InetAddress localAddress, int localPort, IMessageParser parser, String ref,
-      NetworkGuard guard) throws Exception {
+      NetworkGuard guard, String[] extraHostAddresses) throws Exception {
     this(parser, guard);
 
     logger.debug("SCTP Server constructor for listening server @ {}:{}", localAddress, localPort);
     server.setOrigAddress(new InetSocketAddress(localAddress, localPort));
+    server.setExtraHostAddresses(extraHostAddresses);
     server.startServer();
   }
 

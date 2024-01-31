@@ -77,6 +77,7 @@ public class SCTPClientConnection implements IConnection {
         localAddress, localPort });
     client.setDestAddress(new InetSocketAddress(remoteAddress, remotePort));
     client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
+    client.setExtraHostAddresses(getExtraLocalIPAddresses(config));
   }
 
   public SCTPClientConnection(Configuration config, IConcurrentFactory concurrentFactory, InetAddress remoteAddress,
@@ -87,7 +88,30 @@ public class SCTPClientConnection implements IConnection {
         localAddress, localPort });
     client.setDestAddress(new InetSocketAddress(remoteAddress, remotePort));
     client.setOrigAddress(new InetSocketAddress(localAddress, localPort));
+    client.setExtraHostAddresses(getExtraLocalIPAddresses(config));
     listeners.add(listener);
+  }
+
+  private static String[] getExtraLocalIPAddresses(Configuration config) {
+    String[] extraLocalIPAddresses = null;
+
+    if (!config.isAttributeExist(org.jdiameter.server.impl.helpers.Parameters.OwnIPAddresses.ordinal())) {
+      throw new IllegalArgumentException("No IPAddresses attribute present in local peer!");
+    } else {
+      final Configuration[] ownIPAddresses = config.getChildren(org.jdiameter.server.impl.helpers.Parameters.OwnIPAddresses.ordinal());
+      if (ownIPAddresses.length > 4) {
+        throw new IllegalArgumentException("Maximum of 4 IPAddress attributes allowed");
+      }
+
+      extraLocalIPAddresses = new String[ownIPAddresses.length - 1];
+
+      for(int i = 1; i < ownIPAddresses.length; i++) {
+        final String localIPAddress = ownIPAddresses[i].getStringValue(org.jdiameter.server.impl.helpers.Parameters.OwnIPAddress.ordinal(), "");
+        extraLocalIPAddresses[i - 1] = localIPAddress;
+        logger.debug("Adding extra local IP address [{}]", localIPAddress);
+      }
+    }
+    return extraLocalIPAddresses;
   }
 
   @Override

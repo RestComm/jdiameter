@@ -55,6 +55,8 @@ public class SCTPTransportClient {
   private String clientAssociationName;
   protected InetSocketAddress destAddress;
   protected InetSocketAddress origAddress;
+
+  protected String[] extraHostAddresses;
   private int payloadProtocolId = 0;
   private int streamNumber = 0;
 
@@ -109,7 +111,7 @@ public class SCTPTransportClient {
             clientAssociationName, origAddress, destAddress });
         this.clientAssociation = this.management.addAssociation(origAddress.getAddress().getHostAddress(),
             origAddress.getPort(), destAddress.getAddress().getHostAddress(), destAddress.getPort(), clientAssociationName,
-            IpChannelType.SCTP, null);
+            IpChannelType.SCTP, extraHostAddresses);
       }
       else {
         logger.debug("CLIENT ASSOCIATION '{}'. Origin Address [{}:{}] <=> Dest Address [{}:{}] already present. Re-using it.",
@@ -287,6 +289,19 @@ public class SCTPTransportClient {
 
   public InetSocketAddress getOrigAddress() {
     return this.origAddress;
+  }
+
+  public void setExtraHostAddresses(String[] extraHostAddresses) {
+    this.extraHostAddresses = extraHostAddresses;
+    if (logger.isDebugEnabled() && extraHostAddresses != null) {
+      for(final String address : extraHostAddresses) {
+        logger.debug("Extra host address is set to [{}]", address);
+      }
+    }
+  }
+
+  public String[] getExtraHostAddresses() {
+    return this.extraHostAddresses;
   }
 
   public void sendMessage(ByteBuffer bytes) throws IOException {

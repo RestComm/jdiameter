@@ -53,6 +53,7 @@ public class SCTPTransportServer {
   private String serverName;
   protected InetSocketAddress destAddress;
   protected InetSocketAddress origAddress;
+  protected String[] extraHostAddresses;
   private Server server = null;
   private static final Logger logger = LoggerFactory.getLogger(SCTPTransportServer.class);
   private int payloadProtocolId = 0;
@@ -161,7 +162,7 @@ public class SCTPTransportServer {
       // We don't have any, let's create it
       if (server == null) {
         server = this.management.addServer(serverName, origAddress.getAddress().getHostAddress(), origAddress.getPort(),
-            IpChannelType.SCTP, true, 10, null);
+            IpChannelType.SCTP, true, 10, extraHostAddresses);
       }
 
       for (String assocName : server.getAssociations()) {
@@ -378,6 +379,15 @@ public class SCTPTransportServer {
     this.origAddress = address;
     if (logger.isDebugEnabled()) {
       logger.debug("Origin address is set to [{}:{}]", origAddress.getHostName(), origAddress.getPort());
+    }
+  }
+
+  public void setExtraHostAddresses(String[] extraHostAddresses) {
+    this.extraHostAddresses = extraHostAddresses;
+    if (logger.isDebugEnabled() && extraHostAddresses != null) {
+      for(final String address : extraHostAddresses) {
+        logger.debug("Extra host address is set to [{}]", address);
+      }
     }
   }
 
